@@ -39,6 +39,8 @@ function formatDate(iso: string): string {
     :rows="domains"
     :loading="loading"
     row-key="id"
+    clickable
+    @row-click="emit('manage', $event.id)"
   >
     <!-- Domain name -->
     <template #cell-name="{ row }">
@@ -98,11 +100,11 @@ function formatDate(iso: string): string {
           variant="outline"
           size="sm"
           :loading="store.isActioning(row.id)"
-          @click="emit('renew', row.id)"
+          @click.stop="emit('renew', row.id)"
         >
           Renew
         </AppButton>
-        <AppButton variant="outline" size="sm" @click="emit('manage', row.id)">
+        <AppButton variant="outline" size="sm" @click.stop="emit('manage', row.id)">
           Manage
         </AppButton>
       </div>

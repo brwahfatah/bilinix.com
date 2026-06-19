@@ -55,6 +55,8 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
     :rows="servers"
     :loading="loading"
     row-key="id"
+    clickable
+    @row-click="emit('manage', $event.id)"
   >
     <!-- Server name + plan -->
     <template #cell-name="{ row }">
@@ -101,7 +103,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
     <template #actions="{ row }">
       <div class="flex items-center justify-end gap-2">
 
-        <AppButton variant="outline" size="sm" @click="emit('manage', row.id)">
+        <AppButton variant="outline" size="sm" @click.stop="emit('manage', row.id)">
           Manage
         </AppButton>
 

@@ -62,6 +62,15 @@ export default defineNuxtConfig({
     },
   },
 
+  // Dashboard is fully auth-gated and relies on client-side localStorage for auth.
+  // Server-rendering dashboard routes produces hydration mismatches because the
+  // auth store (usePermissions, initials, displayName) has no data during SSR.
+  // Disabling SSR for /dashboard/** prevents the layout from being server-rendered
+  // and eliminates all hydration mismatches on these routes.
+  routeRules: {
+    '/dashboard/**': { ssr: false },
+  },
+
   vite: {
     server: {
       hmr: {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'dashboard', middleware: 'auth' })
+definePageMeta({ layout: 'dashboard', middleware: 'auth', ssr: false })
 
 const dashboard = useDashboard()
 const { canCreate } = usePermissions()
@@ -9,20 +9,18 @@ await useAsyncData('dashboard', () => dashboard.initialize(), { lazy: true })
 // ---------------------------------------------------------------------------
 // Greeting
 // ---------------------------------------------------------------------------
-const greeting = computed(() => {
-  const h = new Date().getHours()
-  if (h < 12) return 'Good morning'
-  if (h < 17) return 'Good afternoon'
-  return 'Good evening'
-})
+const greeting = ref('')
+const today = ref('')
 
-const today = computed(() =>
-  new Date().toLocaleDateString('en-US', {
+onMounted(() => {
+  const h = new Date().getHours()
+  greeting.value = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
+  today.value = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
-  }),
-)
+  })
+})
 
 // ---------------------------------------------------------------------------
 // Stat card definitions (data-driven, no hardcoded colors)

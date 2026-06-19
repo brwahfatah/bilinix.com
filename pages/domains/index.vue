@@ -125,8 +125,13 @@ onMounted(async () => {
     const domainProducts = res?.data?.domain ?? res?.extensions
     if (Array.isArray(domainProducts) && domainProducts.length) {
       // Map domain products to TldEntry format if they look like TLD products
+      const popularTlds = new Set(['.com', '.net', '.org', '.io', '.co'])
       const mapped = domainProducts
-        .map((p: any) => ({ tld: p.specifications?.tld || p.slug?.replace('domain-', '.') || '', price: parseFloat(p.price) || 0 }))
+        .map((p: any) => ({
+          tld:     p.specifications?.tld || p.slug?.replace('domain-', '.') || '',
+          price:   parseFloat(p.price) || 0,
+          popular: p.featured ?? popularTlds.has(p.specifications?.tld ?? ''),
+        }))
         .filter((e) => e.tld)
       if (mapped.length) {
         extensions.value = mapped

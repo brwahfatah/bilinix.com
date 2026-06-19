@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'dashboard', middleware: 'auth' })
+definePageMeta({ layout: 'dashboard', middleware: 'auth', ssr: false })
 
 const store = useBillingStore()
 const { triggerPayInvoice } = useBillingActions()

@@ -92,7 +92,7 @@ function alignClass(align: Column['align'] = 'left') {
         <tbody v-if="loading">
           <tr v-for="i in skeletonRows" :key="i" class="border-b border-slate-100 dark:border-slate-800">
             <td v-for="col in columns" :key="String(col.key)" :class="TABLE_CELL">
-              <div class="h-4 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" :style="`width: ${60 + Math.random() * 30}%`" />
+              <div class="h-4 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" :style="`width: ${60 + (i * 13 + columns.indexOf(col) * 7) % 30}%`" />
             </td>
             <td v-if="$slots.actions" :class="TABLE_CELL" class="text-right">
               <div class="ml-auto h-8 w-20 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
