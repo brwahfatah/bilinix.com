@@ -21,21 +21,14 @@ const _apiFetch = $fetch.create({
   onRequest({ options }: { options: Record<string, any> }) {
     if (!import.meta.client) return
 
-    // Point all relative paths to the Laravel API base URL
-    if (_baseUrl && !options.baseURL) {
-      options.baseURL = _baseUrl
-    }
-
-    // Always request JSON so Laravel returns structured error bodies
-    const h = ((options.headers as Record<string, string>) ?? {})
-    h['Accept'] = 'application/json'
+    // ofetch passes options.headers as a Headers instance; use the Headers API.
+    const headers = new Headers(options.headers as Record<string, string> | undefined)
+    headers.set('Accept', 'application/json')
 
     const token = localStorage.getItem(TOKEN_KEY)
-    if (token) {
-      h['Authorization'] = `Bearer ${token}`
-    }
+    if (token) headers.set('Authorization', `Bearer ${token}`)
 
-    options.headers = h
+    options.headers = headers
   },
   onResponseError({ response }: { response: { status: number } }) {
     _onError?.(response.status)
@@ -43,5 +36,11 @@ const _apiFetch = $fetch.create({
 })
 
 export function api<T = any>(url: string, opts?: Record<string, any>): Promise<T> {
-  return _apiFetch(url, opts as any) as Promise<T>
+  const options: Record<string, any> = opts ? { ...opts } : {}
+  // Inject the base URL at call time so ofetch resolves it before the request fires.
+  // Setting it inside onRequest is too late in some ofetch versions.
+  if (import.meta.client && _baseUrl && !options.baseURL) {
+    options.baseURL = _baseUrl
+  }
+  return _apiFetch(url, options as any) as Promise<T>
 }

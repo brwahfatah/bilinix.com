@@ -76,8 +76,8 @@ const productLinks = [
 
         <!-- Right side actions -->
         <div class="hidden items-center gap-2 lg:flex">
-          <DarkToggle />
-          <CartBadge />
+          <MDarkToggle />
+          <MCartBadge />
           <NuxtLink to="/auth/login" class="rounded-lg px-3.5 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white">
             Log in
           </NuxtLink>
@@ -88,8 +88,8 @@ const productLinks = [
 
         <!-- Mobile actions -->
         <div class="flex items-center gap-2 lg:hidden">
-          <CartBadge />
-          <DarkToggle />
+          <MCartBadge />
+          <MDarkToggle />
           <button
             type="button"
             class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900"
