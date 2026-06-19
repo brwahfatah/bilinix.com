@@ -1,0 +1,96 @@
+import { defineStore } from 'pinia'
+import { billingService } from '../service/billingService'
+import { buildApiError } from '~/types/api'
+import type { Invoice } from '../types/billing'
+import type { ApiError } from '~/types/api'
+
+interface BillingState {
+  items: Invoice[]
+  current: Invoice | null
+  loading: boolean
+  payingId: string | null
+  error: ApiError | null
+}
+
+export const useBillingStore = defineStore('billing', {
+  state: (): BillingState => ({
+    items: [],
+    current: null,
+    loading: false,
+    payingId: null,
+    error: null,
+  }),
+
+  getters: {
+    totalInvoices: (state) => state.items.length,
+    totalPaid: (state) =>
+      state.items
+        .filter((inv) => inv.status === 'paid')
+        .reduce((sum, inv) => sum + inv.amount, 0),
+    totalOutstanding: (state) =>
+      state.items
+        .filter((inv) => inv.status !== 'paid' && inv.status !== 'cancelled')
+        .reduce((sum, inv) => sum + inv.amount, 0),
+    overdueCount: (state) => state.items.filter((inv) => inv.status === 'overdue').length,
+    byId: (state) => (id: string) => state.items.find((inv) => inv.id === id),
+    isPaying: (state) => (id: string) => state.payingId === id,
+  },
+
+  actions: {
+    async fetchList() {
+      this.loading = true
+      this.error = null
+      try {
+        this.items = await billingService.list()
+      } catch (e) {
+        this.error = buildApiError(e)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchOne(id: string) {
+      this.loading = true
+      this.error = null
+      try {
+        this.current = await billingService.get(id)
+      } catch (e) {
+        this.error = buildApiError(e)
+        throw e
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async payInvoice(id: string) {
+      this.payingId = id
+      this.error = null
+      try {
+        const result = await billingService.pay(id)
+
+        if (result.paymentUrl) {
+          window.location.href = result.paymentUrl
+          return result
+        }
+
+        // Inline payment succeeded — update state immediately
+        const listItem = this.items.find((inv) => inv.id === id)
+        if (listItem) {
+          listItem.status = 'paid'
+          listItem.paidAt = new Date().toISOString()
+        }
+        if (this.current?.id === id) {
+          this.current.status = 'paid'
+          this.current.paidAt = new Date().toISOString()
+        }
+
+        return result
+      } catch (e) {
+        this.error = buildApiError(e)
+        throw e
+      } finally {
+        this.payingId = null
+      }
+    },
+  },
+})
