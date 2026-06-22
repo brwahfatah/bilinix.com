@@ -1,0 +1,45 @@
+/* ── Premium landing page entrance animation ──────────────────────────────
+   Used on all public marketing pages: /vps /hosting /domains /dedicated
+   NOT applied to: dashboard, billing, checkout, auth forms.
+
+   Usage:
+     Static delay  — class="animate-enter anim-d0" (or d100, d200, d300, d400)
+     Dynamic delay — class="animate-enter" :style="{ animationDelay: `${n}ms` }"
+──────────────────────────────────────────────────────────────────────────── */
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-enter {
+  animation: pageEnter 800ms ease-out both;
+}
+
+/* ── Fixed stagger delays ─────────────────────────────────────────────────
+   d0   → headline / badge          (immediate)
+   d100 → description               (100ms)
+   d200 → CTA buttons / trust marks (200ms)
+   d300 → hero visual               (300ms)
+   d400 → first card row            (400ms)
+──────────────────────────────────────────────────────────────────────────── */
+.anim-d0   { animation-delay: 0ms; }
+.anim-d100 { animation-delay: 100ms; }
+.anim-d200 { animation-delay: 200ms; }
+.anim-d300 { animation-delay: 300ms; }
+.anim-d400 { animation-delay: 400ms; }
+
+/* ── Accessibility: respect user's motion preference ──────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

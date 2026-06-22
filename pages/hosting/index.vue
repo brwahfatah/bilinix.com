@@ -77,22 +77,22 @@ const techFeatures = [
 
       <div class="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:grid lg:grid-cols-[1fr_0.85fr] lg:items-center lg:gap-10 lg:px-8">
         <div class="max-w-2xl">
-          <div class="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5">
+          <div class="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 animate-enter anim-d0">
             <span class="h-1.5 w-1.5 rounded-full bg-emerald-400" />
             <span class="text-xs font-semibold text-emerald-400">cPanel · NVMe SSD · Free SSL</span>
           </div>
 
-          <h1 class="mt-6 text-5xl font-black leading-[1.08] tracking-tight text-white sm:text-6xl">
+          <h1 class="mt-6 text-5xl font-black leading-[1.08] tracking-tight text-white sm:text-6xl animate-enter anim-d0">
             Shared Hosting
             <br />
             <span class="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">done right.</span>
           </h1>
 
-          <p class="mt-6 text-lg leading-8 text-slate-400">
+          <p class="mt-6 text-lg leading-8 text-slate-400 animate-enter anim-d100">
             Plans built for personal blogs, business websites, and agency client work. cPanel included, backups automated, SSL free.
           </p>
 
-          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row animate-enter anim-d200">
             <a href="#pricing" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 py-3.5 text-sm font-bold text-white shadow-glow transition hover:bg-emerald-400">
               See Pricing
               <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19 9 7-7-7-7" /></svg>
@@ -103,7 +103,7 @@ const techFeatures = [
           </div>
 
           <!-- Trust badges -->
-          <div class="mt-10 flex flex-wrap items-center gap-4">
+          <div class="mt-10 flex flex-wrap items-center gap-4 animate-enter anim-d200">
             <span class="flex items-center gap-2 text-sm text-slate-400">
               <svg class="h-4 w-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
               30-day money back
@@ -120,7 +120,7 @@ const techFeatures = [
         </div>
 
         <!-- Side panel: cPanel mock -->
-        <div class="mt-12 hidden lg:block">
+        <div class="mt-12 hidden lg:block animate-enter anim-d300">
           <div class="animate-float rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden shadow-2xl">
             <div class="flex items-center gap-2 bg-slate-950 px-4 py-3">
               <div class="h-2.5 w-2.5 rounded-full bg-rose-500/60" />
@@ -171,9 +171,10 @@ const techFeatures = [
         </div>
         <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <div
-            v-for="feat in techFeatures"
+            v-for="(feat, i) in techFeatures"
             :key="feat.title"
-            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900"
+            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900 animate-enter"
+            :style="{ animationDelay: `${i * 75}ms` }"
           >
             <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-500/10">
               <svg class="h-5 w-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -216,9 +217,10 @@ const techFeatures = [
 
         <div class="mt-10 grid gap-6 lg:grid-cols-3">
           <article
-            v-for="plan in computedPlans"
+            v-for="(plan, i) in computedPlans"
             :key="plan.id"
-            class="relative flex flex-col rounded-2xl border p-7 shadow-card transition hover:shadow-card-hover"
+            class="relative flex flex-col rounded-2xl border p-7 shadow-card transition hover:shadow-card-hover animate-enter"
+            :style="{ animationDelay: `${400 + i * 75}ms` }"
             :class="plan.popular
               ? 'border-emerald-500/50 bg-slate-950 text-white ring-1 ring-emerald-500/30'
               : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'"

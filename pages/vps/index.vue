@@ -90,22 +90,22 @@ onMounted(async () => {
 
       <div class="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:grid lg:grid-cols-[1fr_0.85fr] lg:items-center lg:gap-12 lg:px-8">
         <div class="max-w-2xl">
-          <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-4 py-1.5">
+          <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-4 py-1.5 animate-enter anim-d0">
             <span class="h-1.5 w-1.5 rounded-full bg-sky-400" />
             <span class="text-xs font-semibold text-sky-400">KVM · NVMe SSD · Enterprise backbone</span>
           </div>
 
-          <h1 class="mt-6 text-5xl font-black leading-[1.08] tracking-tight text-white sm:text-6xl">
+          <h1 class="mt-6 text-5xl font-black leading-[1.08] tracking-tight text-white sm:text-6xl animate-enter anim-d0">
             Cloud VPS
             <br />
             <span class="bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent">with full control.</span>
           </h1>
 
-          <p class="mt-6 text-lg leading-8 text-slate-400">
+          <p class="mt-6 text-lg leading-8 text-slate-400 animate-enter anim-d100">
             KVM virtualisation, NVMe SSD, root access. Deploy in under 2 minutes on OVH's global network. Cancel anytime.
           </p>
 
-          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row animate-enter anim-d200">
             <a href="#plans" class="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-500 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-sky-400">
               See Plans
               <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19 9 7-7-7-7" /></svg>
@@ -115,7 +115,7 @@ onMounted(async () => {
             </NuxtLink>
           </div>
 
-          <div class="mt-10 flex flex-wrap items-center gap-4">
+          <div class="mt-10 flex flex-wrap items-center gap-4 animate-enter anim-d200">
             <span class="flex items-center gap-2 text-sm text-slate-400">
               <svg class="h-4 w-4 text-sky-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
               Full root / SSH access
@@ -132,7 +132,7 @@ onMounted(async () => {
         </div>
 
         <!-- Right: spec sheet mock -->
-        <div class="mt-12 hidden lg:block">
+        <div class="mt-12 hidden lg:block animate-enter anim-d300">
           <div class="animate-float space-y-3 rounded-2xl border border-slate-800 bg-slate-900 p-5">
             <div class="flex items-center justify-between border-b border-slate-800 pb-4">
               <div>
@@ -196,9 +196,10 @@ onMounted(async () => {
 
         <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <article
-            v-for="plan in plans"
+            v-for="(plan, i) in plans"
             :key="plan.id"
-            class="relative flex flex-col rounded-2xl border p-6 shadow-card transition hover:shadow-card-hover"
+            class="relative flex flex-col rounded-2xl border p-6 shadow-card transition hover:shadow-card-hover animate-enter"
+            :style="{ animationDelay: `${400 + i * 75}ms` }"
             :class="plan.popular
               ? 'border-sky-500/40 bg-slate-950 ring-1 ring-sky-500/20'
               : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'"

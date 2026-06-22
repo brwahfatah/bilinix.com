@@ -154,24 +154,24 @@ onMounted(async () => {
 
       <div class="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-3xl text-center">
-          <div class="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5">
+          <div class="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 animate-enter anim-d0">
             <span class="h-1.5 w-1.5 rounded-full bg-amber-400" />
             <span class="text-xs font-semibold text-amber-400">100+ TLDs · Instant registration · WHMCS managed</span>
           </div>
 
-          <h1 class="mt-6 text-5xl font-black leading-[1.08] tracking-tight text-white sm:text-6xl">
+          <h1 class="mt-6 text-5xl font-black leading-[1.08] tracking-tight text-white sm:text-6xl animate-enter anim-d0">
             Find your perfect
             <br />
             <span class="bg-gradient-to-r from-amber-400 to-emerald-400 bg-clip-text text-transparent">domain name.</span>
           </h1>
 
-          <p class="mt-6 text-lg leading-8 text-slate-400">
+          <p class="mt-6 text-lg leading-8 text-slate-400 animate-enter anim-d100">
             Search availability across 100+ extensions. Add your domain to the same cart as hosting or VPS.
           </p>
         </div>
 
         <!-- Search box -->
-        <div class="mx-auto mt-10 max-w-2xl">
+        <div class="mx-auto mt-10 max-w-2xl animate-enter anim-d200">
           <div class="flex overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 focus-within:border-amber-500/50 focus-within:ring-2 focus-within:ring-amber-500/20 transition">
             <input
               v-model.trim="search"
@@ -284,10 +284,11 @@ onMounted(async () => {
 
         <div class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <button
-            v-for="ext in filteredExtensions"
+            v-for="(ext, i) in filteredExtensions"
             :key="ext.tld"
             type="button"
-            class="group flex items-center justify-between rounded-2xl border bg-white p-5 text-left shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-slate-900"
+            class="group flex items-center justify-between rounded-2xl border bg-white p-5 text-left shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-slate-900 animate-enter"
+            :style="{ animationDelay: `${Math.min(i, 7) * 60}ms` }"
             :class="domainInCart(`${normalizeSearch()}${ext.tld}`) && search
               ? 'border-emerald-300 dark:border-emerald-500/40'
               : 'border-slate-200 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-500/30'"
@@ -317,12 +318,13 @@ onMounted(async () => {
     <section class="border-y border-slate-200 bg-slate-50 px-4 py-16 dark:border-slate-800 dark:bg-slate-900/30 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-7xl">
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <div v-for="item in [
+          <div v-for="(item, i) in [
             { label: 'WHMCS managed', desc: 'Renewals, transfers, DNS, and WHOIS managed through your client area.' },
             { label: 'Instant activation', desc: 'Most domain registrations complete in under 60 seconds.' },
             { label: 'DNS included', desc: 'Point to any nameserver or use our DNS hosting. No extra charge.' },
             { label: 'Bundle with hosting', desc: 'Add hosting and your domain to the same cart. One invoice.' },
-          ]" :key="item.label" class="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+          ]" :key="item.label" class="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 animate-enter"
+            :style="{ animationDelay: `${i * 75}ms` }">
             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-500/10">
               <svg class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />

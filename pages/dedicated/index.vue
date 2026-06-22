@@ -55,22 +55,22 @@ const dedicatedFeatures = [
 
       <div class="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-3xl text-center">
-          <div class="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5">
+          <div class="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 animate-enter anim-d0">
             <span class="h-1.5 w-1.5 rounded-full bg-violet-400" />
             <span class="text-xs font-semibold text-violet-400">Bare-metal · Enterprise infrastructure · Full IPMI access</span>
           </div>
 
-          <h1 class="mt-6 text-5xl font-black leading-[1.08] tracking-tight text-white sm:text-6xl">
+          <h1 class="mt-6 text-5xl font-black leading-[1.08] tracking-tight text-white sm:text-6xl animate-enter anim-d0">
             Dedicated Servers
             <br />
             <span class="bg-gradient-to-r from-violet-400 to-rose-400 bg-clip-text text-transparent">enterprise hardware.</span>
           </h1>
 
-          <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-slate-400">
+          <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-slate-400 animate-enter anim-d100">
             Entire physical servers, exclusively yours. Enterprise DDR4 ECC RAM, NVMe storage, and global anti-DDoS protection. No hypervisor overhead.
           </p>
 
-          <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row animate-enter anim-d200">
             <a href="#plans" class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-violet-500">
               Compare Servers
               <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19 9 7-7-7-7" /></svg>
@@ -88,9 +88,10 @@ const dedicatedFeatures = [
       <div class="mx-auto max-w-7xl">
         <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <div
-            v-for="feat in dedicatedFeatures"
+            v-for="(feat, i) in dedicatedFeatures"
             :key="feat.title"
-            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900"
+            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900 animate-enter"
+            :style="{ animationDelay: `${i * 75}ms` }"
           >
             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 dark:bg-violet-500/10">
               <svg class="h-5 w-5 text-violet-600 dark:text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -115,9 +116,10 @@ const dedicatedFeatures = [
 
         <div class="mt-12 grid gap-6 lg:grid-cols-2 xl:grid-cols-4">
           <article
-            v-for="plan in dedicatedPlans"
+            v-for="(plan, i) in dedicatedPlans"
             :key="plan.id"
-            class="relative flex flex-col rounded-2xl border p-6 shadow-card transition hover:shadow-card-hover"
+            class="relative flex flex-col rounded-2xl border p-6 shadow-card transition hover:shadow-card-hover animate-enter"
+            :style="{ animationDelay: `${400 + i * 75}ms` }"
             :class="plan.popular
               ? 'border-violet-500/40 bg-slate-950 ring-1 ring-violet-500/20'
               : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'"
