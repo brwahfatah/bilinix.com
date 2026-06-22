@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { heroMetrics, homeFeatures, hostingPlans, testimonials } from '~/data/site'
+import { homeFeatures, hostingPlans, testimonials } from '~/data/site'
 
 const billing = ref<'monthly' | 'yearly'>('monthly')
 
@@ -28,143 +28,8 @@ const faqs = [
 </script>
 
 <template>
-  <div class="overflow-hidden bg-white dark:bg-slate-950">
-    <section class="relative border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950">
-      <div class="mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_0.95fr] lg:px-8">
-        <div class="max-w-3xl">
-          <p class="text-sm font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
-            Hosting, VPS, domains, and billing in one client flow
-          </p>
-          <h1 class="mt-5 text-4xl font-black tracking-normal text-slate-950 dark:text-white sm:text-5xl lg:text-6xl">
-            Modern hosting that feels calm to run.
-          </h1>
-          <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
-            Beeliin helps customers launch sites, register domains, deploy VPS servers, and manage invoices without a cluttered control-panel experience.
-          </p>
-
-          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-            <NuxtLink to="/vps" class="inline-flex justify-center rounded-lg bg-emerald-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-emerald-700">
-              Explore VPS Plans
-            </NuxtLink>
-            <NuxtLink to="/domains" class="inline-flex justify-center rounded-lg border border-slate-300 px-5 py-3 text-sm font-bold text-slate-800 transition hover:bg-white dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-900">
-              Search Domains
-            </NuxtLink>
-          </div>
-
-          <dl class="mt-10 grid gap-4 sm:grid-cols-3">
-            <div v-for="metric in heroMetrics" :key="metric.label" class="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-              <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                {{ metric.label }}
-              </dt>
-              <dd class="mt-2 text-2xl font-black text-slate-950 dark:text-white">
-                {{ metric.value }}
-              </dd>
-              <dd class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                {{ metric.detail }}
-              </dd>
-            </div>
-          </dl>
-        </div>
-
-        <div class="relative">
-          <div class="rounded-xl border border-slate-200 bg-white p-3 shadow-2xl shadow-slate-900/10 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/30">
-            <!-- Inline SVG animation: stylized server rack + moving cloud + blinking LEDs -->
-            <div class="aspect-[4/3] w-full rounded-lg overflow-hidden bg-black hero-svg-wrapper">
-              <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animated server illustration">
-                <defs>
-                  <linearGradient id="gradBg" x1="0" x2="1">
-                    <stop offset="0%" stop-color="#0f172a" />
-                    <stop offset="100%" stop-color="#071026" />
-                  </linearGradient>
-                  <linearGradient id="rackGrad" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stop-color="#0b1220" />
-                    <stop offset="100%" stop-color="#111827" />
-                  </linearGradient>
-                </defs>
-
-                <rect width="800" height="600" fill="url(#gradBg)" />
-
-                <!-- moving cloud -->
-                <g id="clouds" transform="translate(-200,40)">
-                  <g class="cloud" opacity="0.95" transform="translate(0,0)">
-                    <ellipse cx="220" cy="80" rx="90" ry="34" fill="#0ea5a4" opacity="0.12" />
-                    <ellipse cx="280" cy="68" rx="60" ry="26" fill="#38bdf8" opacity="0.08" />
-                    <ellipse cx="160" cy="72" rx="60" ry="26" fill="#7dd3fc" opacity="0.06" />
-                  </g>
-                  <g class="cloud" transform="translate(280,40)">
-                    <ellipse cx="220" cy="80" rx="90" ry="34" fill="#60a5fa" opacity="0.08" />
-                    <ellipse cx="280" cy="68" rx="60" ry="26" fill="#38bdf8" opacity="0.06" />
-                    <ellipse cx="160" cy="72" rx="60" ry="26" fill="#06b6d4" opacity="0.05" />
-                  </g>
-                </g>
-
-                <!-- server rack -->
-                <g transform="translate(170,120)">
-                  <rect x="0" y="0" width="460" height="320" rx="18" ry="18" fill="url(#rackGrad)" stroke="#111827" stroke-opacity="0.6" />
-
-                  <!-- rack units -->
-                  <g fill="#0f1724" transform="translate(28,26)">
-                    <rect x="0" y="0" width="404" height="44" rx="8" />
-                    <rect x="0" y="64" width="404" height="44" rx="8" />
-                    <rect x="0" y="128" width="404" height="44" rx="8" />
-                    <rect x="0" y="192" width="404" height="44" rx="8" />
-                  </g>
-
-                  <!-- LEDs (animated) -->
-                  <g id="leds" transform="translate(360,36)">
-                    <circle cx="0" cy="8" r="6" fill="#10b981" class="led1" />
-                    <circle cx="0" cy="72" r="6" fill="#34d399" class="led2" />
-                    <circle cx="0" cy="136" r="6" fill="#60a5fa" class="led3" />
-                    <circle cx="0" cy="200" r="6" fill="#f97316" class="led4" />
-                  </g>
-
-                  <!-- tiny network lines -->
-                  <g stroke="#063c2f" stroke-width="2" transform="translate(36,40)">
-                    <path d="M0 200 L100 200" stroke-opacity="0.18" />
-                    <path d="M0 136 L130 136" stroke-opacity="0.12" />
-                    <path d="M0 72 L150 72" stroke-opacity="0.10" />
-                  </g>
-
-                  <!-- overlay subtle glow -->
-                  <rect x="24" y="18" width="412" height="284" rx="14" fill="none" stroke="#06b6d4" opacity="0.02" />
-                  </g>
-
-                  <!-- decorative animated pulses -->
-                  <g>
-                    <circle cx="640" cy="420" r="20" fill="#06b6d4" opacity="0.06" class="pulse1" />
-                    <circle cx="580" cy="460" r="14" fill="#34d399" opacity="0.05" class="pulse2" />
-                  </g>
-              </svg>
-              <!-- fallback image for older browsers -->
-              <img src="/vps-dashboard.png" alt="Beeliin VPS dashboard preview" class="hidden" />
-            </div>
-          </div>
-          <div class="absolute -bottom-5 left-5 right-5 rounded-lg border border-slate-200 bg-white p-4 shadow-xl dark:border-slate-800 dark:bg-slate-900 sm:left-auto sm:w-72">
-            <p class="text-sm font-semibold text-slate-950 dark:text-white">Resource overview</p>
-            <div class="mt-3 space-y-3">
-              <div>
-                <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
-                  <span>CPU</span>
-                  <span>45%</span>
-                </div>
-                <div class="mt-1 h-2 rounded-full bg-slate-100 dark:bg-slate-800">
-                  <div class="h-2 w-[45%] rounded-full bg-emerald-500" />
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
-                  <span>Memory</span>
-                  <span>62%</span>
-                </div>
-                <div class="mt-1 h-2 rounded-full bg-slate-100 dark:bg-slate-800">
-                  <div class="h-2 w-[62%] rounded-full bg-sky-500" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <div class="overflow-hidden">
+    <MHeroSection />
 
     <section class="px-4 py-20 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-7xl">
@@ -321,21 +186,3 @@ const faqs = [
   </div>
 </template>
 
-<style scoped>
-/* SVG-scoped animations moved out of the inline SVG (Vue client components cannot have <style> inside templates) */
-@keyframes cloudMove { 0% { transform: translateX(-220px);} 50% { transform: translateX(20px);} 100% { transform: translateX(-220px);} }
-@keyframes ledBlink { 0% { opacity: 0.15; transform: scale(0.9);} 50% { opacity: 1; transform: scale(1.15);} 100% { opacity: 0.15; transform: scale(0.9);} }
-@keyframes pulse { 0% { r: 8; opacity: 0.18; } 70% { r: 44; opacity: 0; } 100% { r: 8; opacity: 0; } }
-
-/* Apply animations to SVG elements by class or ID */
-#clouds { animation: cloudMove 12s linear infinite; }
-.led1 { animation: ledBlink 1.8s ease-in-out infinite; transform-origin: center; }
-.led2 { animation: ledBlink 2.6s ease-in-out 0.3s infinite; transform-origin: center; }
-.led3 { animation: ledBlink 2.2s ease-in-out 0.6s infinite; transform-origin: center; }
-.led4 { animation: ledBlink 3s ease-in-out 0.9s infinite; transform-origin: center; }
-.pulse1 { animation: pulse 2.8s ease-out infinite; transform-origin: center; }
-.pulse2 { animation: pulse 3.6s ease-out 0.6s infinite; transform-origin: center; }
-
-/* Ensure the SVG scales cleanly inside the card */
-.hero-svg-wrapper svg { display: block; width: 100%; height: 100%; }
-</style>
