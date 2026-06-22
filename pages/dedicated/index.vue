@@ -3,6 +3,17 @@ import { useRouter } from 'vue-router'
 import { dedicatedPlans } from '~/data/site'
 import { useCart } from '~/composables/useCart'
 
+useSeoMeta({
+  title: 'Dedicated Servers — Bare-Metal from $59.99/mo | Beeliin',
+  description: 'Enterprise dedicated servers on OVH infrastructure. AMD EPYC and Intel Xeon processors, DDR4 ECC RAM, unmetered bandwidth, and full IPMI access.',
+  ogTitle: 'Dedicated Servers from $59.99/mo | Beeliin',
+  ogDescription: 'Bare-metal dedicated servers with enterprise DDR4 ECC RAM, NVMe storage, and unmetered bandwidth. Full IPMI access.',
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Dedicated Servers from $59.99/mo | Beeliin',
+  twitterDescription: 'Enterprise bare-metal servers. AMD EPYC & Intel Xeon, ECC RAM, unmetered bandwidth.',
+})
+
 const router = useRouter()
 const { addItem, items } = useCart()
 
@@ -71,13 +82,13 @@ const dedicatedFeatures = [
           </p>
 
           <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row animate-enter anim-d200">
-            <a href="#plans" class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-violet-500">
-              Compare Servers
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19 9 7-7-7-7" /></svg>
-            </a>
-            <NuxtLink to="/vps" class="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-3.5 text-sm font-bold text-slate-200 transition hover:border-slate-500 hover:bg-slate-800">
-              Need VPS instead? →
+            <NuxtLink to="/auth/signup" class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-violet-500">
+              Get Started
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
             </NuxtLink>
+            <a href="#plans" class="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-3.5 text-sm font-bold text-slate-200 transition hover:border-slate-500 hover:bg-slate-800">
+              View Plans
+            </a>
           </div>
         </div>
       </div>
@@ -102,6 +113,26 @@ const dedicatedFeatures = [
             <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{{ feat.desc }}</p>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ───── TRUST BAR ───── -->
+    <section class="border-y border-slate-200 bg-slate-50 px-4 py-6 dark:border-slate-800 dark:bg-slate-900/30 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl">
+        <dl class="grid grid-cols-2 sm:grid-cols-4">
+          <div v-for="(stat, i) in [
+            { value: 'OVH Infra', label: 'Enterprise backbone' },
+            { value: '4h SLA', label: 'Hardware replacement' },
+            { value: '1–2 Gbps', label: 'Network uplink' },
+            { value: '24/7', label: 'Technical support' },
+          ]" :key="stat.label"
+            class="flex flex-col items-center py-3 text-center"
+            :class="i < 3 ? 'border-r border-slate-200 dark:border-slate-800' : ''"
+          >
+            <dd class="text-xl font-black text-slate-950 dark:text-white">{{ stat.value }}</dd>
+            <dt class="mt-0.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ stat.label }}</dt>
+          </div>
+        </dl>
       </div>
     </section>
 

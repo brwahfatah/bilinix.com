@@ -4,6 +4,17 @@ import { useRouter } from 'vue-router'
 import { hostingPlans } from '~/data/site'
 import { useCart } from '~/composables/useCart'
 
+useSeoMeta({
+  title: 'Shared Web Hosting with cPanel — from $2.99/mo | Beeliin',
+  description: 'Shared hosting with cPanel, free SSL certificate, NVMe SSD storage, and automated backups. Plans for personal sites, growing businesses, and agencies.',
+  ogTitle: 'Shared Web Hosting from $2.99/mo | Beeliin',
+  ogDescription: 'cPanel hosting with free SSL, NVMe SSD, and daily backups. Personal to agency plans starting at $2.99/mo.',
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Web Hosting from $2.99/mo | Beeliin',
+  twitterDescription: 'cPanel hosting with free SSL, NVMe SSD, and daily backups. Personal to agency plans.',
+})
+
 const router = useRouter()
 const { addItem, items } = useCart()
 
@@ -93,10 +104,10 @@ const techFeatures = [
           </p>
 
           <div class="mt-8 flex flex-col gap-3 sm:flex-row animate-enter anim-d200">
-            <a href="#pricing" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 py-3.5 text-sm font-bold text-white shadow-glow transition hover:bg-emerald-400">
-              See Pricing
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19 9 7-7-7-7" /></svg>
-            </a>
+            <NuxtLink to="/auth/signup" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 py-3.5 text-sm font-bold text-white shadow-glow transition hover:bg-emerald-400">
+              Get Started
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
+            </NuxtLink>
             <NuxtLink to="/domains" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-3.5 text-sm font-bold text-slate-200 transition hover:border-slate-500 hover:bg-slate-800">
               Search Domain Name
             </NuxtLink>
@@ -183,6 +194,57 @@ const techFeatures = [
             </div>
             <h3 class="mt-4 font-bold text-slate-950 dark:text-white">{{ feat.title }}</h3>
             <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{{ feat.desc }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── SOCIAL PROOF ───── -->
+    <section class="px-4 py-14 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl">
+        <div class="rounded-2xl border border-emerald-100 bg-emerald-50 p-8 dark:border-emerald-500/10 dark:bg-emerald-500/5">
+          <div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+            <div class="max-w-sm">
+              <p class="text-sm font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Trusted by 2,400+ businesses</p>
+              <p class="mt-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">Businesses rely on Beeliin for hosting that just works.</p>
+              <div class="mt-5 space-y-2.5">
+                <span class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                  <svg class="h-4 w-4 shrink-0 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                  99.9% uptime guarantee with SLA
+                </span>
+                <span class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                  <svg class="h-4 w-4 shrink-0 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                  Free SSL provisioned on day one
+                </span>
+                <span class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                  <svg class="h-4 w-4 shrink-0 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                  Daily backups — one-click restore
+                </span>
+                <span class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                  <svg class="h-4 w-4 shrink-0 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                  24/7 support via client area
+                </span>
+              </div>
+            </div>
+            <figure class="max-w-md flex-1">
+              <div class="flex gap-0.5 mb-3" aria-label="5 out of 5 stars">
+                <svg v-for="i in 5" :key="i" class="h-4 w-4 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </div>
+              <blockquote class="text-base leading-7 text-slate-700 dark:text-slate-300">
+                "Switched from a crowded shared server. Beeliin's hosting plans are transparent — free SSL was provisioned automatically and cPanel was ready immediately. Very smooth experience."
+              </blockquote>
+              <figcaption class="mt-5 flex items-center gap-3">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/15">
+                  <span class="text-xs font-black text-emerald-700 dark:text-emerald-400">LB</span>
+                </div>
+                <div>
+                  <p class="font-bold text-slate-950 dark:text-white">Lena Brandt</p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">Operations Lead, Brandhaus</p>
+                </div>
+              </figcaption>
+            </figure>
           </div>
         </div>
       </div>

@@ -19,6 +19,17 @@ type VpsPlan = {
   features: string[]
 }
 
+useSeoMeta({
+  title: 'Cloud VPS Hosting — KVM, NVMe SSD from $5.99/mo | Beeliin',
+  description: 'Deploy a KVM VPS with NVMe SSD storage in under 2 minutes. Full root access, DDoS protection included, 6 global datacenter locations. Cancel anytime.',
+  ogTitle: 'Cloud VPS Hosting from $5.99/mo | Beeliin',
+  ogDescription: 'KVM VPS with NVMe SSD, full root access, and DDoS protection. Deploy in under 2 minutes.',
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Cloud VPS from $5.99/mo | Beeliin',
+  twitterDescription: 'Deploy a KVM VPS in under 2 minutes. NVMe SSD, root access, DDoS protection.',
+})
+
 const config = useRuntimeConfig()
 const router = useRouter()
 const { items } = useCart()
@@ -106,10 +117,10 @@ onMounted(async () => {
           </p>
 
           <div class="mt-8 flex flex-col gap-3 sm:flex-row animate-enter anim-d200">
-            <a href="#plans" class="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-500 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-sky-400">
-              See Plans
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19 9 7-7-7-7" /></svg>
-            </a>
+            <NuxtLink to="/auth/signup" class="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-500 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-sky-400">
+              Get Started
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" /></svg>
+            </NuxtLink>
             <NuxtLink to="/dedicated" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-3.5 text-sm font-bold text-slate-200 transition hover:border-slate-500 hover:bg-slate-800">
               Need dedicated? →
             </NuxtLink>
@@ -298,6 +309,72 @@ onMounted(async () => {
                 <p class="text-xs text-slate-500">{{ loc.dc }}</p>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── SOCIAL PROOF ───── -->
+    <section class="px-4 py-16 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl">
+        <div class="grid gap-8 lg:grid-cols-[1fr_1.6fr] lg:items-center">
+          <div>
+            <p class="text-sm font-bold uppercase tracking-widest text-sky-600 dark:text-sky-400">Trusted by developers</p>
+            <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-950 dark:text-white">Teams deploy on Beeliin every day.</h2>
+            <div class="mt-6 grid grid-cols-2 gap-4">
+              <div class="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+                <p class="text-2xl font-black text-slate-950 dark:text-white">&lt;&nbsp;2 min</p>
+                <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Avg. VPS deploy time</p>
+              </div>
+              <div class="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+                <p class="text-2xl font-black text-slate-950 dark:text-white">99.9%</p>
+                <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Network uptime SLA</p>
+              </div>
+              <div class="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+                <p class="text-2xl font-black text-slate-950 dark:text-white">6</p>
+                <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Datacenter locations</p>
+              </div>
+              <div class="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+                <p class="text-2xl font-black text-slate-950 dark:text-white">24/7</p>
+                <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Technical support</p>
+              </div>
+            </div>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <figure class="flex flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <div class="flex gap-0.5" aria-label="5 out of 5 stars">
+                <svg v-for="i in 5" :key="i" class="h-4 w-4 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </div>
+              <blockquote class="mt-4 flex-1 text-sm leading-6 text-slate-600 dark:text-slate-400">"Enterprise-grade VPS with a modern client area. The configurator shows exactly what you're getting before you commit."</blockquote>
+              <figcaption class="mt-4 flex items-center gap-2.5">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-50 dark:bg-sky-500/10">
+                  <span class="text-xs font-black text-sky-700 dark:text-sky-400">AR</span>
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-slate-950 dark:text-white">Ahmed Raza</p>
+                  <p class="text-xs text-slate-500">Senior DevOps, CloudScale</p>
+                </div>
+              </figcaption>
+            </figure>
+            <figure class="flex flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <div class="flex gap-0.5" aria-label="5 out of 5 stars">
+                <svg v-for="i in 5" :key="i" class="h-4 w-4 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </div>
+              <blockquote class="mt-4 flex-1 text-sm leading-6 text-slate-600 dark:text-slate-400">"From order to SSH access in under 3 minutes. The dashboard keeps billing and servers in one place — exactly what I needed."</blockquote>
+              <figcaption class="mt-4 flex items-center gap-2.5">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-50 dark:bg-sky-500/10">
+                  <span class="text-xs font-black text-sky-700 dark:text-sky-400">SK</span>
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-slate-950 dark:text-white">Sara Khalil</p>
+                  <p class="text-xs text-slate-500">Founder, DevStudio</p>
+                </div>
+              </figcaption>
+            </figure>
           </div>
         </div>
       </div>

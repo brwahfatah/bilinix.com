@@ -18,6 +18,17 @@ type TldEntry = {
   category?: string
 }
 
+useSeoMeta({
+  title: 'Domain Name Registration — .com from $9.99/yr | Beeliin',
+  description: 'Register .com, .net, .io, .dev and 100+ domain extensions. Instant registration, free DNS hosting, WHOIS privacy. Bundle with hosting or VPS in one cart.',
+  ogTitle: 'Domain Name Registration | Beeliin',
+  ogDescription: 'Search and register .com, .net, .io, .dev and 100+ domain extensions. Instant activation with free DNS.',
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Domain Names from $9.99/yr | Beeliin',
+  twitterDescription: 'Register .com, .net, .io, .dev and 100+ TLDs. Instant activation with free DNS hosting.',
+})
+
 const config = useRuntimeConfig()
 const { addItem, items, locked } = useCart()
 
@@ -311,6 +322,26 @@ onMounted(async () => {
             </div>
           </button>
         </div>
+      </div>
+    </section>
+
+    <!-- ───── TRUST STRIP ───── -->
+    <section class="border-y border-slate-200 bg-amber-50 px-4 py-5 dark:border-slate-800 dark:bg-amber-500/5 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl">
+        <dl class="grid grid-cols-2 sm:grid-cols-4">
+          <div v-for="(stat, i) in [
+            { value: '100+', label: 'Domain extensions' },
+            { value: '< 60s', label: 'Avg. activation time' },
+            { value: 'Free', label: 'DNS hosting included' },
+            { value: '24/7', label: 'Domain support' },
+          ]" :key="stat.label"
+            class="flex flex-col items-center py-3 text-center"
+            :class="i < 3 ? 'border-r border-amber-200 dark:border-amber-500/20' : ''"
+          >
+            <dd class="text-xl font-black text-slate-950 dark:text-white">{{ stat.value }}</dd>
+            <dt class="mt-0.5 text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">{{ stat.label }}</dt>
+          </div>
+        </dl>
       </div>
     </section>
 
