@@ -202,7 +202,7 @@ export const useCart = () => {
         method: 'POST',
         headers,
         body: {
-          product_id:    item.id,
+          product_id:    String(item.meta?.whmcs_product_id ?? item.id),
           name:          item.name,
           type:          item.type,
           billing_cycle: periodToBillingCycle(item.period),
