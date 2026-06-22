@@ -212,7 +212,7 @@ onMounted(async () => {
             class="relative flex flex-col rounded-2xl border p-6 shadow-card transition hover:shadow-card-hover animate-enter"
             :style="{ animationDelay: `${400 + i * 75}ms` }"
             :class="plan.popular
-              ? 'border-sky-500/40 bg-slate-950 ring-1 ring-sky-500/20'
+              ? 'border-sky-500/60 bg-slate-950 ring-2 ring-sky-500/40'
               : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'"
           >
             <div v-if="plan.badge" class="absolute -top-3.5 left-5">
@@ -279,8 +279,15 @@ onMounted(async () => {
                   : 'bg-slate-950 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100'"
               @click="goToConfigure(plan)"
             >
-              {{ serverInCart(plan.id) ? 'In Cart — Configure' : 'Deploy VPS' }}
+              {{ serverInCart(plan.id) ? 'In Cart →' : 'Get Started' }}
             </button>
+            <a
+              :href="`/vps/configure?plan=${plan.id}`"
+              class="mt-2 block text-center text-xs transition"
+              :class="plan.popular ? 'text-sky-400 hover:text-sky-300' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+            >
+              View full specs &amp; configure →
+            </a>
           </article>
         </div>
       </div>

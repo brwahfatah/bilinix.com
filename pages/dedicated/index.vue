@@ -152,7 +152,7 @@ const dedicatedFeatures = [
             class="relative flex flex-col rounded-2xl border p-6 shadow-card transition hover:shadow-card-hover animate-enter"
             :style="{ animationDelay: `${400 + i * 75}ms` }"
             :class="plan.popular
-              ? 'border-violet-500/40 bg-slate-950 ring-1 ring-violet-500/20'
+              ? 'border-violet-500/60 bg-slate-950 ring-2 ring-violet-500/40'
               : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'"
           >
             <div v-if="plan.badge" class="absolute -top-3.5 left-5">
@@ -221,8 +221,12 @@ const dedicatedFeatures = [
                   : 'bg-slate-950 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100'"
               @click="orderPlan(plan)"
             >
-              {{ serverInCart(plan.id) ? 'In Cart →' : 'Order Server' }}
+              {{ serverInCart(plan.id) ? 'In Cart →' : 'Get Started' }}
             </button>
+            <p class="mt-2 text-center text-xs"
+              :class="plan.popular ? 'text-violet-400' : 'text-slate-500'">
+              Full IPMI access · Unmetered bandwidth
+            </p>
           </article>
         </div>
       </div>

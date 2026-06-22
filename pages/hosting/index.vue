@@ -284,7 +284,7 @@ const techFeatures = [
             class="relative flex flex-col rounded-2xl border p-7 shadow-card transition hover:shadow-card-hover animate-enter"
             :style="{ animationDelay: `${400 + i * 75}ms` }"
             :class="plan.popular
-              ? 'border-emerald-500/50 bg-slate-950 text-white ring-1 ring-emerald-500/30'
+              ? 'border-emerald-500/70 bg-slate-950 text-white ring-2 ring-emerald-500/50'
               : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'"
           >
             <div v-if="plan.badge" class="absolute -top-3.5 left-6">
@@ -339,6 +339,13 @@ const techFeatures = [
             >
               {{ planInCart(plan.id) ? 'View Cart →' : 'Get Started' }}
             </button>
+            <a
+              href="#compare"
+              class="mt-2 block text-center text-xs transition"
+              :class="plan.popular ? 'text-emerald-400 hover:text-emerald-300' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+            >
+              Compare all features ↓
+            </a>
           </article>
         </div>
 
