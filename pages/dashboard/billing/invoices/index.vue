@@ -2,9 +2,33 @@
 definePageMeta({ layout: 'dashboard', middleware: 'auth', ssr: false })
 
 const store = useBillingStore()
+const route = useRoute()
+const notify = useNotification()
 const { triggerPayInvoice } = useBillingActions()
 
 await useAsyncData('billing-list', () => store.fetchList(), { lazy: true })
+
+// ── Handle Stripe redirect result ──────────────────────────────────────────
+onMounted(() => {
+  const payment = route.query.payment as string | undefined
+
+  if (payment === 'success') {
+    notify.success(
+      'Payment received',
+      'Your payment is being processed. The invoice will be marked paid shortly.',
+    )
+    // Refresh invoice list so new status is reflected as soon as webhook fires
+    store.fetchList()
+    // Clean the query string without triggering a navigation
+    navigateTo('/dashboard/billing/invoices', { replace: true })
+  } else if (payment === 'cancelled') {
+    notify.warning(
+      'Payment cancelled',
+      'You cancelled the payment. You can retry from the invoice page.',
+    )
+    navigateTo('/dashboard/billing/invoices', { replace: true })
+  }
+})
 
 async function handlePay(id: string) {
   await triggerPayInvoice(id)
