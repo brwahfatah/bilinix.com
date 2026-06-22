@@ -1,32 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-
-// ── Custom cursor glow — fine-pointer (desktop) only ───────────────────────
-const cursorX      = ref(-100)
-const cursorY      = ref(-100)
-const cursorVisible = ref(false)
-const hasFinePointer = ref(false)
-
-function onCursorMove(e: MouseEvent) {
-  cursorX.value = e.clientX
-  cursorY.value = e.clientY
-  if (!cursorVisible.value) cursorVisible.value = true
-}
-function onCursorLeave() { cursorVisible.value = false }
-
-onMounted(() => {
-  hasFinePointer.value = window.matchMedia('(pointer: fine)').matches
-  if (hasFinePointer.value) {
-    window.addEventListener('mousemove', onCursorMove, { passive: true })
-    document.documentElement.addEventListener('mouseleave', onCursorLeave)
-  }
-})
-
-onUnmounted(() => {
-  window.removeEventListener('mousemove', onCursorMove)
-  document.documentElement.removeEventListener('mouseleave', onCursorLeave)
-})
-
 // ── Static data ────────────────────────────────────────────────────────────
 const nodes = [
   { cx: 200, cy: 160, delay: '0s',   color: '#22d3ee' },
@@ -50,16 +22,6 @@ const particles = Array.from({ length: 28 }, (_, i) => ({
 </script>
 
 <template>
-  <!-- Subtle cursor glow — teleported to body, desktop only, no hydration risk -->
-  <Teleport to="body">
-    <div
-      v-if="hasFinePointer && cursorVisible"
-      class="bln-cursor-dot"
-      :style="{ transform: `translate(${cursorX}px, ${cursorY}px)` }"
-      aria-hidden="true"
-    />
-  </Teleport>
-
   <div class="globe-wrapper" aria-hidden="true">
     <!-- background glow -->
     <div class="glow-bg" />
@@ -315,20 +277,3 @@ const particles = Array.from({ length: 28 }, (_, i) => ({
 }
 </style>
 
-<!-- Non-scoped: cursor-dot is teleported outside this component's DOM subtree -->
-<style>
-.bln-cursor-dot {
-  position: fixed;
-  top: -5px;
-  left: -5px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(34, 211, 238, 0.72);
-  box-shadow: 0 0 8px rgba(34, 211, 238, 0.65), 0 0 18px rgba(34, 211, 238, 0.30);
-  pointer-events: none;
-  z-index: 9999;
-  will-change: transform;
-  transition: opacity 0.25s ease;
-}
-</style>
