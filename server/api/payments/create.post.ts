@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Unauthenticated' })
   }
 
-  const body = await readBody<{ invoice_id?: string | number }>(event)
+  const body = await readBody<{ invoice_id?: string | number; amount?: number }>(event)
   const invoiceId = asNumber(body?.invoice_id)
   if (!invoiceId) {
     throw createError({ statusCode: 422, statusMessage: 'invoice_id is required' })
@@ -30,13 +30,24 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 503, statusMessage: 'Crypto payments are not configured' })
   }
 
-  const invoiceData = await callWhmcsApi('GetInvoice', { invoiceid: invoiceId })
-  const inv = invoiceData as Record<string, any>
+  const isFake = String(runtime.whmcsDriver) === 'fake'
 
-  const invoiceNum = asString(inv.invoicenum || inv.number || String(invoiceId))
-  const amount = parseFloat(asString(inv.total || '0')) || 0
-  if (amount <= 0) {
-    throw createError({ statusCode: 400, statusMessage: 'Invoice has no payable amount' })
+  let amount: number
+  let invoiceNum: string
+
+  if (isFake) {
+    // Fake/dev mode: use amount from request body (required) or default to $1.00 test
+    amount = asNumber(body?.amount, 1.00)
+    invoiceNum = `FAKE-${invoiceId}`
+    console.log(`[NOWPayments][FAKE] Creating test payment for invoice #${invoiceId}, amount: $${amount}`)
+  } else {
+    const invoiceData = await callWhmcsApi('GetInvoice', { invoiceid: invoiceId })
+    const inv = invoiceData as Record<string, any>
+    invoiceNum = asString(inv.invoicenum || inv.number || String(invoiceId))
+    amount = parseFloat(asString(inv.total || '0')) || 0
+    if (amount <= 0) {
+      throw createError({ statusCode: 400, statusMessage: 'Invoice has no payable amount' })
+    }
   }
 
   const nowPayment = (await $fetch('https://api.nowpayments.io/v1/invoice', {
@@ -63,5 +74,6 @@ export default defineEventHandler(async (event) => {
     payment_url: nowPayment.invoice_url,
     payment_id: String(nowPayment.id),
     order_id: String(invoiceId),
+    fake: isFake,
   }
 })

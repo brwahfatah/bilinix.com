@@ -59,6 +59,8 @@ export default defineNuxtConfig({
     // NOWPayments — server-only secrets
     nowpaymentsApiKey: '',     // NUXT_NOWPAYMENTS_API_KEY
     nowpaymentsIpnSecret: '',  // NUXT_NOWPAYMENTS_IPN_SECRET
+    // Set to 'fake' to skip all WHMCS calls (matches Laravel WHMCS_DRIVER=fake)
+    whmcsDriver: 'whmcs',      // NUXT_WHMCS_DRIVER
     public: {
       apiBase: 'http://localhost:8000/api',
       appName: 'Beeliin Hosting',

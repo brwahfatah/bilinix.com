@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
 
   const runtime = useRuntimeConfig()
   const ipnSecret = String(runtime.nowpaymentsIpnSecret ?? '')
+  const isFake = String(runtime.whmcsDriver) === 'fake'
 
   if (ipnSecret) {
     if (!signature || !verifySignature(rawBody, signature, ipnSecret)) {
@@ -47,6 +48,12 @@ export default defineEventHandler(async (event) => {
   const invoiceId = Number(order_id)
   if (!invoiceId) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid order_id in payload' })
+  }
+
+  if (isFake) {
+    console.log(`[NOWPayments][FAKE] Invoice #${invoiceId} marked paid — payment_id: ${payment_id}, amount: ${actually_paid}`)
+    setResponseStatus(event, 200)
+    return { ok: true, fake: true, invoiceId, payment_id, actually_paid }
   }
 
   await callWhmcsApi('AddInvoicePayment', {
