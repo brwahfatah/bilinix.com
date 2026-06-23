@@ -100,7 +100,9 @@ export const useBillingStore = defineStore('billing', {
       this.cryptoPayingId = id
       this.error = null
       try {
-        const result = await billingService.payWithCrypto(id)
+        // Pass the known invoice amount so fake-mode server-side doesn't default to $1
+        const inv = this.items.find((i) => i.id === id) ?? (this.current?.id === id ? this.current : null)
+        const result = await billingService.payWithCrypto(id, inv?.amount)
         if (result.paymentUrl) {
           window.location.href = result.paymentUrl
           return result

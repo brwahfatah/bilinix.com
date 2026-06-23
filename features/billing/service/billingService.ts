@@ -96,11 +96,12 @@ export const billingService = {
   },
 
   // POST /api/payments/create — creates a NOWPayments invoice and returns the checkout URL
-  async payWithCrypto(id: string): Promise<PayInvoiceResult> {
+  // amount is passed as a hint for fake/dev mode (server ignores it in production and calls WHMCS instead)
+  async payWithCrypto(id: string, amount?: number): Promise<PayInvoiceResult> {
     const token = import.meta.client ? localStorage.getItem('auth_token') : null
     const res = (await $fetch('/api/payments/create', {
       method: 'POST',
-      body: { invoice_id: id },
+      body: { invoice_id: id, amount },
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })) as { payment_url: string; payment_id: string; order_id: string }
     if (res.payment_url) {
