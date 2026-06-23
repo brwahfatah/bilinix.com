@@ -3,7 +3,8 @@
  * NOWPayments end-to-end test (fake WHMCS driver)
  *
  * Steps:
- *  1. Mint a valid session token for user #1
+ *  1. Build auth token (real Sanctum token via TEST_TOKEN env var, or a fixed
+ *     placeholder accepted by fake mode — fake mode accepts any Bearer token)
  *  2. Create a NOWPayments invoice (fake mode: $5 test amount)
  *  3. Simulate a 'waiting'  IPN  → expect 200 {ok:true, status:'waiting'}
  *  4. Simulate a 'finished' IPN  → expect 200 {ok:true, fake:true}
@@ -14,11 +15,13 @@
 import { createHmac } from 'node:crypto'
 
 // ── Config ──────────────────────────────────────────────────────────────────
-const BASE_URL       = process.env.TEST_BASE_URL   || 'https://bilinix.com'
-const TOKEN_SECRET   = process.env.TOKEN_SECRET    || 'replace-with-a-long-random-secret-min-32-chars'
-const IPN_SECRET     = process.env.IPN_SECRET      || 'do7UdHM2Rr9rgJeE520QPtHP9rAxxTwS'
-const TEST_INVOICE   = Number(process.env.TEST_INVOICE_ID || 9001)
-const TEST_AMOUNT    = Number(process.env.TEST_AMOUNT     || 5.00)
+const BASE_URL     = process.env.TEST_BASE_URL   || 'https://bilinix.com'
+const IPN_SECRET   = process.env.IPN_SECRET      || 'do7UdHM2Rr9rgJeE520QPtHP9rAxxTwS'
+const TEST_INVOICE = Number(process.env.TEST_INVOICE_ID || 9001)
+const TEST_AMOUNT  = Number(process.env.TEST_AMOUNT     || 5.00)
+// In fake mode any non-empty Bearer token is accepted.
+// Pass a real Sanctum token via TEST_TOKEN to test against production auth.
+const TEST_TOKEN   = process.env.TEST_TOKEN || 'fake-test-token-for-dev-mode'
 
 const PASS = '\x1b[32m[PASS]\x1b[0m'
 const FAIL = '\x1b[31m[FAIL]\x1b[0m'
@@ -38,13 +41,6 @@ function assert(label, condition, detail = '') {
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-function mintToken(userId = 1, ttlMs = 86_400_000) {
-  const payload = JSON.stringify({ uid: userId, exp: Date.now() + ttlMs })
-  const encoded = Buffer.from(payload, 'utf8').toString('base64url')
-  const sig = createHmac('sha256', TOKEN_SECRET).update(encoded).digest('hex')
-  return `${encoded}.${sig}`
-}
-
 function signWebhookPayload(body) {
   const sorted = Object.fromEntries(Object.keys(body).sort().map(k => [k, body[k]]))
   return createHmac('sha512', IPN_SECRET).update(JSON.stringify(sorted)).digest('hex')
@@ -67,11 +63,11 @@ console.log(`${INFO} Base URL:  ${BASE_URL}`)
 console.log(`${INFO} Invoice:   #${TEST_INVOICE}  Amount: $${TEST_AMOUNT}`)
 console.log()
 
-// ── Step 1: mint auth token ──────────────────────────────────────────────────
+// ── Step 1: auth token ───────────────────────────────────────────────────────
 console.log('\x1b[1m── Step 1: Auth Token\x1b[0m')
-const token = mintToken(1)
-console.log(`${INFO} Token (first 40 chars): ${token.slice(0, 40)}…`)
-assert('Token minted (non-empty)', token.length > 10)
+const token = TEST_TOKEN
+console.log(`${INFO} Token (first 40 chars): ${token.slice(0, 40)}${token.length > 40 ? '…' : ''}`)
+assert('Token available (non-empty)', token.length > 0)
 
 // ── Step 2: create NOWPayments invoice ───────────────────────────────────────
 console.log('\n\x1b[1m── Step 2: Create Payment\x1b[0m')

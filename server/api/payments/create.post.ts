@@ -1,5 +1,5 @@
-import { createError, readBody } from 'h3'
-import { callWhmcsApi, getAuthTokenFromHeader, readSessionUserId } from '~/server/utils/whmcs'
+import { createError, getRequestHeader, readBody } from 'h3'
+import { callWhmcsApi } from '~/server/utils/whmcs'
 
 const asNumber = (v: unknown, fallback = 0) => {
   const n = Number(v)
@@ -12,10 +12,23 @@ const asString = (v: unknown, fallback = '') => {
 }
 
 export default defineEventHandler(async (event) => {
-  const token = getAuthTokenFromHeader(event)
-  const clientId = readSessionUserId(token)
-  if (!clientId) {
+  const runtime = useRuntimeConfig()
+  const isFake = String(runtime.whmcsDriver) === 'fake'
+
+  // Require a Bearer token (Sanctum token stored in browser localStorage)
+  const authHeader = getRequestHeader(event, 'authorization') ?? ''
+  if (!authHeader.startsWith('Bearer ')) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthenticated' })
+  }
+
+  if (!isFake) {
+    // Production: verify the Sanctum token against the Laravel /auth/me endpoint
+    const apiBase = asString(runtime.public.apiBase)
+    try {
+      await $fetch(`${apiBase}/auth/me`, { headers: { authorization: authHeader } })
+    } catch {
+      throw createError({ statusCode: 401, statusMessage: 'Unauthenticated' })
+    }
   }
 
   const body = await readBody<{ invoice_id?: string | number; amount?: number }>(event)
@@ -24,19 +37,16 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 422, statusMessage: 'invoice_id is required' })
   }
 
-  const runtime = useRuntimeConfig()
   const apiKey = asString(runtime.nowpaymentsApiKey)
   if (!apiKey) {
     throw createError({ statusCode: 503, statusMessage: 'Crypto payments are not configured' })
   }
 
-  const isFake = String(runtime.whmcsDriver) === 'fake'
-
   let amount: number
   let invoiceNum: string
 
   if (isFake) {
-    // Fake/dev mode: use amount from request body (required) or default to $1.00 test
+    // Fake/dev mode: use amount from request body or default to $1.00 test
     amount = asNumber(body?.amount, 1.00)
     invoiceNum = `FAKE-${invoiceId}`
     console.log(`[NOWPayments][FAKE] Creating test payment for invoice #${invoiceId}, amount: $${amount}`)
