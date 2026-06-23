@@ -77,7 +77,13 @@ export function useBillingActions() {
       const result = await store.payWithCrypto(id)
       return { ok: true, data: result }
     } catch {
-      const msg = store.error?.message ?? 'Failed to create crypto payment. Please try again.'
+      const err = store.error
+      if (err?.type === 'validation') {
+        // Server rejected the request with a user-facing reason (e.g. below minimum amount)
+        notify.warning('Crypto payment unavailable', err.message)
+        return { ok: false, error: err.message }
+      }
+      const msg = err?.message ?? 'Failed to create crypto payment. Please try again.'
       notify.error('Payment failed', msg)
       return { ok: false, error: msg }
     }

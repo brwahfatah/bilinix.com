@@ -42,6 +42,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 503, statusMessage: 'Crypto payments are not configured' })
   }
 
+  // NOWPayments enforces a minimum ~$18.82; guard at $20 to stay safely above it
+  const NP_MIN_USD = 20
+
   let amount: number
   let invoiceNum: string
 
@@ -59,6 +62,18 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: 'Invoice has no payable amount' })
     }
   }
+
+  if (amount < NP_MIN_USD) {
+    console.log(
+      `[NOWPayments] Blocked invoice #${invoiceId}: amount $${amount} is below minimum $${NP_MIN_USD}`,
+    )
+    throw createError({
+      statusCode: 400,
+      statusMessage: `Minimum crypto payment is $${NP_MIN_USD}. This invoice total ($${amount}) is too low for crypto payments.`,
+    })
+  }
+
+  console.log(`[NOWPayments] Creating invoice #${invoiceId}, amount: $${amount}`)
 
   const nowPayment = (await $fetch('https://api.nowpayments.io/v1/invoice', {
     method: 'POST',

@@ -33,6 +33,19 @@ export interface ApiError {
 
 export function buildApiError(raw: unknown): ApiError {
   if (raw instanceof Error) {
+    // ofetch FetchError carries the parsed response body in `.data`
+    const fetchErr = raw as {
+      data?: { statusMessage?: string; message?: string }
+      status?: number
+      statusCode?: number
+    }
+    const status = fetchErr.status ?? fetchErr.statusCode
+    const serverMsg = fetchErr.data?.statusMessage || fetchErr.data?.message
+
+    if (status === 400 && serverMsg) {
+      return { type: 'validation', message: serverMsg, status }
+    }
+
     const msg = raw.message.toLowerCase()
     if (msg.includes('401') || msg.includes('unauthorized')) {
       return { type: 'auth', message: 'Session expired. Please log in again.' }
@@ -40,7 +53,7 @@ export function buildApiError(raw: unknown): ApiError {
     if (msg.includes('404') || msg.includes('not found')) {
       return { type: 'not_found', message: 'Resource not found.' }
     }
-    return { type: 'server', message: raw.message }
+    return { type: 'server', message: raw.message, status }
   }
   return { type: 'network', message: 'Connection failed. Check your network.' }
 }
