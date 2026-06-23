@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
       pay_currency: 'usdttrc20',
       order_id: String(invoiceId),
       order_description: `Invoice #${invoiceNum}`,
-      ipn_callback_url: 'https://api.bilinix.com/api/payments/webhook/nowpayments',
+      ipn_callback_url: 'https://bilinix.com/api/payments/webhook/nowpayments',
       success_url: 'https://bilinix.com/dashboard/billing/invoices?payment=success',
       cancel_url: 'https://bilinix.com/dashboard/billing/invoices?payment=cancelled',
       is_fixed_rate: false,
