@@ -95,6 +95,18 @@ export const billingService = {
     return { paidInline: true }
   },
 
+  // POST /api/payments/create — creates a NOWPayments invoice and returns the checkout URL
+  async payWithCrypto(id: string): Promise<PayInvoiceResult> {
+    const res = (await $fetch('/api/payments/create', {
+      method: 'POST',
+      body: { invoice_id: id },
+    })) as { payment_url: string; payment_id: string; order_id: string }
+    if (res.payment_url) {
+      return { paidInline: false, paymentUrl: res.payment_url }
+    }
+    return { paidInline: false }
+  },
+
   // Compute billing summary from the invoice list — no dedicated endpoint
   async summary(): Promise<{ totalPaid: number; totalOutstanding: number; overdueCount: number }> {
     const invoiceList = await this.list()

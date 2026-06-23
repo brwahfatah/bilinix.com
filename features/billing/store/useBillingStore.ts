@@ -9,6 +9,7 @@ interface BillingState {
   current: Invoice | null
   loading: boolean
   payingId: string | null
+  cryptoPayingId: string | null
   error: ApiError | null
 }
 
@@ -18,6 +19,7 @@ export const useBillingStore = defineStore('billing', {
     current: null,
     loading: false,
     payingId: null,
+    cryptoPayingId: null,
     error: null,
   }),
 
@@ -34,6 +36,7 @@ export const useBillingStore = defineStore('billing', {
     overdueCount: (state) => state.items.filter((inv) => inv.status === 'overdue').length,
     byId: (state) => (id: string) => state.items.find((inv) => inv.id === id),
     isPaying: (state) => (id: string) => state.payingId === id,
+    isCryptoPaying: (state) => (id: string) => state.cryptoPayingId === id,
   },
 
   actions: {
@@ -90,6 +93,24 @@ export const useBillingStore = defineStore('billing', {
         throw e
       } finally {
         this.payingId = null
+      }
+    },
+
+    async payWithCrypto(id: string) {
+      this.cryptoPayingId = id
+      this.error = null
+      try {
+        const result = await billingService.payWithCrypto(id)
+        if (result.paymentUrl) {
+          window.location.href = result.paymentUrl
+          return result
+        }
+        return result
+      } catch (e) {
+        this.error = buildApiError(e)
+        throw e
+      } finally {
+        this.cryptoPayingId = null
       }
     },
   },

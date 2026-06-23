@@ -56,11 +56,17 @@ export default defineNuxtConfig({
     whmcsDeptBilling: 2,
     whmcsDeptSales: 3,
     whmcsDeptGeneral: 4,
+    // NOWPayments — server-only secrets
+    nowpaymentsApiKey: '',     // NUXT_NOWPAYMENTS_API_KEY
+    nowpaymentsIpnSecret: '',  // NUXT_NOWPAYMENTS_IPN_SECRET
     public: {
       apiBase: 'http://localhost:8000/api',
       appName: 'Beeliin Hosting',
       appEnv: 'development',
       enableDevMocks: false,
+      // Payment feature flags
+      enableStripe: false,       // NUXT_PUBLIC_ENABLE_STRIPE
+      enableNowPayments: true,   // NUXT_PUBLIC_ENABLE_NOWPAYMENTS
     },
   },
 

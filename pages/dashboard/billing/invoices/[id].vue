@@ -7,9 +7,10 @@ const route = useRoute()
 const id = route.params.id as string
 
 const store = useBillingStore()
-const { triggerPayInvoice, isPaying } = useBillingActions()
+const { triggerPayInvoice, triggerCryptoPay, isPaying, isCryptoPaying } = useBillingActions()
 
 const paying = isPaying(id)
+const cryptoPaying = isCryptoPaying(id)
 
 await useAsyncData(`invoice-${id}`, () => store.fetchOne(id), { lazy: true })
 
@@ -19,6 +20,10 @@ const entity = computed(() =>
 
 async function handlePay() {
   await triggerPayInvoice(id)
+}
+
+async function handlePayCrypto() {
+  await triggerCryptoPay(id)
 }
 
 function formatDate(date: Date | null): string {
@@ -111,7 +116,9 @@ function formatDate(date: Date | null): string {
       <InvoicePayPanel
         :entity="entity"
         :loading="paying"
+        :crypto-loading="cryptoPaying"
         @pay="handlePay"
+        @pay:crypto="handlePayCrypto"
       />
 
     </template>

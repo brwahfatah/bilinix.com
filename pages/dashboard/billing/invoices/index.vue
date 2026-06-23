@@ -20,13 +20,13 @@ onMounted(() => {
     // Refresh invoice list so new status is reflected as soon as webhook fires
     store.fetchList()
     // Clean the query string without triggering a navigation
-    navigateTo('/dashboard/billing/invoices', { replace: true })
+    navigateTo({ path: '/dashboard/billing/invoices', replace: true })
   } else if (payment === 'cancelled') {
     notify.warning(
       'Payment cancelled',
       'You cancelled the payment. You can retry from the invoice page.',
     )
-    navigateTo('/dashboard/billing/invoices', { replace: true })
+    navigateTo({ path: '/dashboard/billing/invoices', replace: true })
   }
 })
 
