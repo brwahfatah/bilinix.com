@@ -30,9 +30,9 @@ export default defineEventHandler(async (event) => {
     // and capture the user's email for Hestia provisioning metadata
     const apiBase = asString(runtime.public.apiBase)
     try {
-      const me = await $fetch<any>(`${apiBase}/auth/me`, {
+      const me = (await $fetch(`${apiBase}/auth/me`, {
         headers: { authorization: authHeader },
-      })
+      })) as Record<string, any>
       // Laravel /auth/me returns { data: { email } } or { user: { email } }
       userEmail = asString(me?.data?.email ?? me?.user?.email ?? me?.email ?? '').toLowerCase()
     } catch {

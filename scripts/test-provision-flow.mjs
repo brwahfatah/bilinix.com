@@ -142,7 +142,8 @@ assert('invoiceId echoed',        Number(webhookRes.json?.invoiceId) === TEST_IN
 console.log('\n\x1b[1m── Step 3: Verify Hestia account exists\x1b[0m')
 
 // Derive the expected username the same way toHestiaUsername does
-const expectedUsername = TEST_EMAIL.split('@')[0]
+// (uses full email to avoid cross-domain collisions)
+const expectedUsername = TEST_EMAIL
   .toLowerCase()
   .replace(/[^a-z0-9]/g, '')
   .slice(0, 16)

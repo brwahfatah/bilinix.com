@@ -38,14 +38,14 @@ export const callHestiaApi = async (cmd: string, args: string[] = []): Promise<s
   form.set('cmd', cmd)
   args.forEach((arg, i) => form.set(`arg${i + 1}`, arg))
 
-  const raw = await $fetch<string>(apiUrl, {
+  const raw = (await $fetch(apiUrl, {
     method: 'POST',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     body: form.toString(),
     // HestiaCP uses a self-signed cert on fresh installs
     ignoreResponseError: true,
-    parseResponse: (txt) => txt
-  })
+    parseResponse: (txt: string) => txt,
+  })) as string
 
   return asString(raw).trim()
 }
@@ -53,9 +53,15 @@ export const callHestiaApi = async (cmd: string, args: string[] = []): Promise<s
 /**
  * Derive a valid HestiaCP username from an email address.
  * Rules: lowercase, alphanumeric only, 2–16 chars.
+ *
+ * Uses the full email (not just the local part) so that
+ * alice@site1.com and alice@site2.com produce different usernames.
+ * Known limitation: john.doe@x.com and johndoe@x.com on the same
+ * domain both reduce to "johndoeXcom" — treated as acceptable since
+ * real providers don't issue both addresses to different people.
  */
 export const toHestiaUsername = (email: string): string => {
-  const base = email.split('@')[0]!
+  const base = email
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '')
     .slice(0, 16)
