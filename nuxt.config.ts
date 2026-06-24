@@ -61,6 +61,10 @@ export default defineNuxtConfig({
     nowpaymentsIpnSecret: '',  // NUXT_NOWPAYMENTS_IPN_SECRET
     // Set to 'fake' to skip all WHMCS calls (matches Laravel WHMCS_DRIVER=fake)
     whmcsDriver: 'whmcs',      // NUXT_WHMCS_DRIVER
+    // HestiaCP provisioning — creates hosting accounts after payment
+    hestiaApiUrl: '',          // NUXT_HESTIA_API_URL  e.g. https://207.180.243.94:8083/api/
+    hestiaApiKey: '',          // NUXT_HESTIA_API_KEY  (v-generate-api-key output)
+    hestiaAdminUser: 'admin',  // NUXT_HESTIA_ADMIN_USER
     public: {
       apiBase: 'http://localhost:8000/api',
       appName: 'Beeliin Hosting',

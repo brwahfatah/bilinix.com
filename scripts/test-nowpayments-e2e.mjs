@@ -16,7 +16,8 @@ import { createHmac } from 'node:crypto'
 
 // ── Config ──────────────────────────────────────────────────────────────────
 const BASE_URL     = process.env.TEST_BASE_URL   || 'https://bilinix.com'
-const IPN_SECRET   = process.env.IPN_SECRET      || 'do7UdHM2Rr9rgJeE520QPtHP9rAxxTwS'
+const IPN_SECRET   = process.env.IPN_SECRET
+if (!IPN_SECRET) { console.error('IPN_SECRET env var is required'); process.exit(1) }
 const TEST_INVOICE = Number(process.env.TEST_INVOICE_ID || 9001)
 const TEST_AMOUNT  = Number(process.env.TEST_AMOUNT     || 5.00)
 // In fake mode any non-empty Bearer token is accepted.
