@@ -7,6 +7,7 @@ import {
   toHestiaUsername,
   type HestiaPackage,
 } from '~/server/utils/hestia'
+import { sendWelcomeEmail } from '~/server/utils/email'
 
 // ── Signature verification ────────────────────────────────────────────────────
 
@@ -45,6 +46,7 @@ function generatePassword(): string {
 // entry is preserved so the next webhook retry can attempt provisioning again.
 
 const VALID_PACKAGES: readonly string[] = ['STARTER', 'BUSINESS', 'AGENCY']
+
 
 async function triggerHestiaProvisioning(invoiceId: number): Promise<void> {
   const runtime = useRuntimeConfig()
@@ -93,14 +95,22 @@ async function triggerHestiaProvisioning(invoiceId: number): Promise<void> {
     domain: meta.domain,
   })
 
-  // Remove the pending entry only after a successful provision
   await storage.removeItem(storageKey)
 
-  // password is intentionally NOT logged — must be delivered via welcome email
   console.log(
     `[Hestia] Provisioned account "${username}" for ${meta.email} pkg=${pkg} invoice=#${invoiceId}`,
   )
-  // TODO: send welcome email to meta.email with panel_url and the generated password
+
+  try {
+    await sendWelcomeEmail({
+      to:          meta.email,
+      username,
+      password,
+      packageName: pkg,
+    })
+  } catch (err) {
+    console.error('[WELCOME_EMAIL_FAILED]', err)
+  }
 }
 
 // ── Webhook handler ───────────────────────────────────────────────────────────

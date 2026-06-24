@@ -65,6 +65,13 @@ export default defineNuxtConfig({
     hestiaApiUrl: '',          // NUXT_HESTIA_API_URL  e.g. https://207.180.243.94:8083/api/
     hestiaApiKey: '',          // NUXT_HESTIA_API_KEY  (v-generate-api-key output)
     hestiaAdminUser: 'admin',  // NUXT_HESTIA_ADMIN_USER
+    hestiaWelcomeEmailUrl: '', // NUXT_HESTIA_WELCOME_EMAIL_URL — POST endpoint that sends welcome email
+    // SMTP — used by server/utils/email.ts for transactional emails
+    smtpHost: '',              // NUXT_SMTP_HOST  e.g. smtp.mailgun.org
+    smtpPort: 587,             // NUXT_SMTP_PORT  465 for SSL, 587 for STARTTLS
+    smtpUser: '',              // NUXT_SMTP_USER
+    smtpPass: '',              // NUXT_SMTP_PASS
+    smtpFrom: '',              // NUXT_SMTP_FROM  e.g. "Bilinix Hosting <noreply@bilinix.com>"
     public: {
       apiBase: 'http://localhost:8000/api',
       appName: 'Beeliin Hosting',
