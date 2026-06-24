@@ -4,6 +4,20 @@ import { buildApiError } from '~/types/api'
 import type { Invoice } from '../types/billing'
 import type { ApiError } from '~/types/api'
 
+// Inspect invoice line-item descriptions to determine which Hestia hosting
+// package should be provisioned. Returns null if this is not a hosting invoice
+// (e.g. VPS, domain, SSL) so the caller can skip provisioning.
+function getHostingPackageFromInvoice(invoice: Invoice | null): string | null {
+  if (!invoice) return null
+  for (const item of invoice.items ?? []) {
+    const d = item.description.toLowerCase()
+    if (d.includes('agency') || d.includes('unlimited')) return 'AGENCY'
+    if (d.includes('business')) return 'BUSINESS'
+    if (d.includes('starter') || d.includes('shared') || d.includes('hosting')) return 'STARTER'
+  }
+  return null
+}
+
 interface BillingState {
   items: Invoice[]
   current: Invoice | null
@@ -102,7 +116,10 @@ export const useBillingStore = defineStore('billing', {
       try {
         // Pass the known invoice amount so fake-mode server-side doesn't default to $1
         const inv = this.items.find((i) => i.id === id) ?? (this.current?.id === id ? this.current : null)
-        const result = await billingService.payWithCrypto(id, inv?.amount)
+        // Derive the Hestia hosting package from invoice line items so the server
+        // can provision the account automatically after payment completes
+        const hostingPackage = getHostingPackageFromInvoice(inv)
+        const result = await billingService.payWithCrypto(id, inv?.amount, hostingPackage ?? undefined)
         if (result.paymentUrl) {
           window.location.href = result.paymentUrl
           return result
