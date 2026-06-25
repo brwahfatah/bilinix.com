@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import SectionHeader from '~/components/Ui/SectionHeader.vue'
 
+useSeoMeta({
+  title: 'Terms of Service | Bilinix Hosting',
+  description: 'Bilinix Hosting terms of service covering account responsibilities, acceptable use, billing, data handling, and service level agreements.',
+  ogTitle: 'Terms of Service | Bilinix Hosting',
+})
+
 const lastUpdated = '2026-06-25'
 </script>
 

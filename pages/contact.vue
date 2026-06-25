@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import SectionHeader from '~/components/Ui/SectionHeader.vue'
+
+useSeoMeta({
+  title: 'Contact Us | Bilinix Hosting',
+  description: 'Get in touch with Bilinix Hosting. Email support, open a ticket, or learn about our response times.',
+  ogTitle: 'Contact Bilinix Hosting',
+})
 </script>
 
 <template>

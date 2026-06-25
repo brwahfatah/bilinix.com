@@ -2,6 +2,12 @@
 import SectionHeader from '~/components/Ui/SectionHeader.vue'
 import { homeFeatures } from '~/data/site'
 
+useSeoMeta({
+  title: 'Features — Everything in One Platform | Bilinix Hosting',
+  description: 'Explore all Bilinix features: VPS management, domain registration, billing, support tickets, and more in a single unified dashboard.',
+  ogTitle: 'Features | Bilinix Hosting',
+})
+
 const workflow = [
   'Search or choose a product',
   'Configure the service',

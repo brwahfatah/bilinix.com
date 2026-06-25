@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import SectionHeader from '~/components/Ui/SectionHeader.vue'
 
+useSeoMeta({
+  title: 'About Bilinix — Hosting Made Simpler',
+  description: 'Bilinix brings hosting, domains, VPS, billing, and support into one connected experience. Learn about our values and approach.',
+  ogTitle: 'About Bilinix Hosting',
+  ogDescription: 'Hosting, domains, VPS, billing, and support in one calm flow.',
+})
+
 const values = [
   { title: 'Clear buying paths', description: 'Customers should understand what they are ordering before they reach checkout.' },
   { title: 'Operational calm', description: 'Dashboards should support repeated work without noisy decoration.' },

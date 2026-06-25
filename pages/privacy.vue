@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import SectionHeader from '~/components/Ui/SectionHeader.vue'
 
+useSeoMeta({
+  title: 'Privacy Policy | Bilinix Hosting',
+  description: 'How Bilinix collects, uses, and protects your personal data. Covers data storage, cookies, third-party services, and your rights.',
+  ogTitle: 'Privacy Policy | Bilinix Hosting',
+})
+
 const lastUpdated = '2026-06-25'
 </script>
 
