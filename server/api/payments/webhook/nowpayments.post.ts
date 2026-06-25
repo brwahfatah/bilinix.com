@@ -123,10 +123,11 @@ export default defineEventHandler(async (event) => {
   const ipnSecret = String(runtime.nowpaymentsIpnSecret ?? '')
   const isFake = String(runtime.whmcsDriver) === 'fake'
 
-  if (ipnSecret) {
-    if (!signature || !verifySignature(rawBody, signature, ipnSecret)) {
-      throw createError({ statusCode: 401, statusMessage: 'Invalid IPN signature' })
-    }
+  if (!ipnSecret) {
+    throw createError({ statusCode: 500, statusMessage: 'IPN secret not configured' })
+  }
+  if (!signature || !verifySignature(rawBody, signature, ipnSecret)) {
+    throw createError({ statusCode: 401, statusMessage: 'Invalid IPN signature' })
   }
 
   let payload: Record<string, any>
