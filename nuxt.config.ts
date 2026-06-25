@@ -90,6 +90,7 @@ export default defineNuxtConfig({
   // and eliminates all hydration mismatches on these routes.
   routeRules: {
     '/dashboard/**': { ssr: false },
+    '/auth/register': { redirect: { to: '/auth/signup', statusCode: 301 } },
   },
 
   vite: {
