@@ -341,12 +341,16 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
     }
 
-    const user = await getClientProfile(userId)
+    const profile = await getClientProfile(userId)
     const token = issueSessionToken(userId)
 
     return {
-      token,
-      user
+      data: {
+        token,
+        user: { id: profile.id, name: profile.full_name, email: profile.email, role: 'client', created_at: '' }
+      },
+      message: 'Login successful',
+      errors: null
     }
   }
 
@@ -386,21 +390,28 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 500, statusMessage: 'Failed to create WHMCS client account' })
     }
 
-    const user = await getClientProfile(userId)
+    const profile = await getClientProfile(userId)
     const token = issueSessionToken(userId)
 
     return {
-      token,
-      user,
-      clientid: userId
+      data: {
+        token,
+        user: { id: profile.id, name: profile.full_name, email: profile.email, role: 'client', created_at: '' }
+      },
+      message: 'Registration successful',
+      errors: null
     }
   }
 
   if (method === 'GET' && path === 'auth/me') {
     const clientId = extractClientId(event)
-    const user = await getClientProfile(clientId)
+    const profile = await getClientProfile(clientId)
 
-    return { user }
+    return {
+      data: { id: profile.id, name: profile.full_name, email: profile.email, role: 'client', created_at: '' },
+      message: 'OK',
+      errors: null
+    }
   }
 
   if (method === 'POST' && (path === 'auth/logout' || path === 'auth/logout-all')) {
@@ -816,8 +827,11 @@ export default defineEventHandler(async (event) => {
       lastname,
       skipvalidation: true
     })
-    const user = await getClientProfile(clientId)
-    return { user, success: true }
+    const profile = await getClientProfile(clientId)
+    return {
+      data: { id: profile.id, name: profile.full_name, email: profile.email, role: 'client', created_at: '' },
+      success: true
+    }
   }
 
   // ── AUTH: change-password ──────────────────────────────────────────────────
