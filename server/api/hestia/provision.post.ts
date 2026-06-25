@@ -1,10 +1,11 @@
-import { createError, readBody } from 'h3'
+import { createError, getRequestHeader, readBody } from 'h3'
 import {
   hestiaProvisionUser,
   hestiaUserExists,
   toHestiaUsername,
   type HestiaPackage
 } from '~/server/utils/hestia'
+import { readSessionUserId, getAuthTokenFromHeader } from '~/server/utils/whmcs'
 
 const VALID_PACKAGES: HestiaPackage[] = ['STARTER', 'BUSINESS', 'AGENCY']
 
@@ -25,6 +26,12 @@ const asString = (v: unknown, fallback = '') =>
  *   username?    string   Override the auto-derived username (optional)
  */
 export default defineEventHandler(async (event) => {
+  const token = getAuthTokenFromHeader(event)
+  const userId = readSessionUserId(token)
+  if (!userId) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthenticated' })
+  }
+
   const body = await readBody<{
     email?: string
     password?: string
