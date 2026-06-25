@@ -181,12 +181,12 @@ const productLinks = [
 
           <!-- Legal -->
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Legal</h3>
+            <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Company</h3>
             <ul class="mt-4 space-y-2.5">
-              <li><span class="text-sm text-slate-600 dark:text-slate-400">Privacy Policy</span></li>
-              <li><span class="text-sm text-slate-600 dark:text-slate-400">Terms of Service</span></li>
-              <li><span class="text-sm text-slate-600 dark:text-slate-400">Acceptable Use</span></li>
-              <li><span class="text-sm text-slate-600 dark:text-slate-400">SLA Agreement</span></li>
+              <li><NuxtLink to="/privacy" class="text-sm text-slate-600 transition hover:text-slate-950 dark:text-slate-400 dark:hover:text-white">Privacy Policy</NuxtLink></li>
+              <li><NuxtLink to="/terms" class="text-sm text-slate-600 transition hover:text-slate-950 dark:text-slate-400 dark:hover:text-white">Terms of Service</NuxtLink></li>
+              <li><NuxtLink to="/contact" class="text-sm text-slate-600 transition hover:text-slate-950 dark:text-slate-400 dark:hover:text-white">Contact Us</NuxtLink></li>
+              <li><NuxtLink to="/about" class="text-sm text-slate-600 transition hover:text-slate-950 dark:text-slate-400 dark:hover:text-white">About</NuxtLink></li>
             </ul>
           </div>
         </div>
