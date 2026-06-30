@@ -5,14 +5,14 @@ import { hostingPlans } from '~/data/site'
 import { useCart } from '~/composables/useCart'
 
 useSeoMeta({
-  title: 'Shared Web Hosting with cPanel — from $2.99/mo | Beeliin',
-  description: 'Shared hosting with cPanel, free SSL certificate, NVMe SSD storage, and automated backups. Plans for personal sites, growing businesses, and agencies.',
-  ogTitle: 'Shared Web Hosting from $2.99/mo | Beeliin',
-  ogDescription: 'cPanel hosting with free SSL, NVMe SSD, and daily backups. Personal to agency plans starting at $2.99/mo.',
+  title: 'Shared Web Hosting — NVMe SSD from $2.99/mo | Bilinix',
+  description: 'Shared hosting with a full-featured control panel, free SSL certificate, NVMe SSD storage, and automated backups. Plans for personal sites, growing businesses, and agencies.',
+  ogTitle: 'Shared Web Hosting from $2.99/mo | Bilinix',
+  ogDescription: 'Managed hosting with free SSL, NVMe SSD, and daily backups. Personal to agency plans starting at $2.99/mo.',
   ogType: 'website',
   twitterCard: 'summary_large_image',
-  twitterTitle: 'Web Hosting from $2.99/mo | Beeliin',
-  twitterDescription: 'cPanel hosting with free SSL, NVMe SSD, and daily backups. Personal to agency plans.',
+  twitterTitle: 'Web Hosting from $2.99/mo | Bilinix',
+  twitterDescription: 'Managed hosting with free SSL, NVMe SSD, and daily backups. Personal to agency plans.',
 })
 
 const router = useRouter()
@@ -60,7 +60,7 @@ const compareRows = [
   { label: 'Email Accounts', starter: '10', business: '50', agency: 'Unlimited' },
   { label: 'MySQL Databases', starter: '5', business: 'Unlimited', agency: 'Unlimited' },
   { label: 'Free SSL Certificate', starter: 'check', business: 'check', agency: 'check' },
-  { label: 'cPanel Included', starter: 'check', business: 'check', agency: 'check' },
+  { label: 'Control Panel', starter: 'check', business: 'check', agency: 'check' },
   { label: 'FTP Access', starter: 'check', business: 'check', agency: 'check' },
   { label: 'Backups', starter: 'Weekly', business: 'Daily', agency: 'Daily' },
   { label: 'Dedicated IP', starter: 'cross', business: 'cross', agency: 'check' },
@@ -69,10 +69,10 @@ const compareRows = [
 
 const techFeatures = [
   { icon: 'lightning', title: 'NVMe SSD Storage', desc: 'Up to 10× faster than traditional HDD. Every plan ships with NVMe storage.' },
-  { icon: 'cpanel', title: 'cPanel Included', desc: 'The industry-standard control panel. Manage files, databases, email, and more.' },
+  { icon: 'cpanel', title: 'Control Panel Included', desc: 'A full-featured control panel to manage files, databases, email, and more.' },
   { icon: 'ssl', title: 'Free SSL Certificate', desc: 'Let\'s Encrypt SSL provisioned automatically. HTTPS on day one.' },
   { icon: 'mail', title: 'Professional Email', desc: 'Create mailboxes on your domain. Works with Outlook, Gmail, and any mail client.' },
-  { icon: 'backup', title: 'Automatic Backups', desc: 'Daily and weekly backups depending on plan. One-click restore from cPanel.' },
+  { icon: 'backup', title: 'Automatic Backups', desc: 'Daily and weekly backups depending on plan. One-click restore from your control panel.' },
   { icon: 'wp', title: 'WordPress Ready', desc: 'One-click WordPress install. Optimized PHP settings for maximum WP performance.' },
 ]
 </script>
@@ -90,7 +90,7 @@ const techFeatures = [
         <div class="max-w-2xl">
           <div class="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 animate-enter anim-d0">
             <span class="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            <span class="text-xs font-semibold text-emerald-400">cPanel · NVMe SSD · Free SSL</span>
+            <span class="text-xs font-semibold text-emerald-400">Control Panel · NVMe SSD · Free SSL</span>
           </div>
 
           <h1 class="mt-6 text-5xl font-black leading-[1.08] tracking-tight text-white sm:text-6xl animate-enter anim-d0">
@@ -100,7 +100,7 @@ const techFeatures = [
           </h1>
 
           <p class="mt-6 text-lg leading-8 text-slate-400 animate-enter anim-d100">
-            Plans built for personal blogs, business websites, and agency client work. cPanel included, backups automated, SSL free.
+            Plans built for personal blogs, business websites, and agency client work. Control panel included, backups automated, SSL free.
           </p>
 
           <div class="mt-8 flex flex-col gap-3 sm:flex-row animate-enter anim-d200">
@@ -130,14 +130,14 @@ const techFeatures = [
           </div>
         </div>
 
-        <!-- Side panel: cPanel mock -->
+        <!-- Side panel: control panel mock -->
         <div class="mt-12 hidden lg:block animate-enter anim-d300">
           <div class="animate-float rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden shadow-2xl">
             <div class="flex items-center gap-2 bg-slate-950 px-4 py-3">
               <div class="h-2.5 w-2.5 rounded-full bg-rose-500/60" />
               <div class="h-2.5 w-2.5 rounded-full bg-amber-500/60" />
               <div class="h-2.5 w-2.5 rounded-full bg-emerald-500/60" />
-              <div class="ml-2 text-[10px] text-slate-500">cPanel — File Manager</div>
+              <div class="ml-2 text-[10px] text-slate-500">Control Panel — File Manager</div>
             </div>
             <div class="p-5 space-y-3">
               <div class="grid grid-cols-3 gap-3">
@@ -206,7 +206,7 @@ const techFeatures = [
           <div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div class="max-w-sm">
               <p class="text-sm font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Trusted by 2,400+ businesses</p>
-              <p class="mt-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">Businesses rely on Beeliin for hosting that just works.</p>
+              <p class="mt-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">Businesses rely on Bilinix for hosting that just works.</p>
               <div class="mt-5 space-y-2.5">
                 <span class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <svg class="h-4 w-4 shrink-0 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
@@ -233,7 +233,7 @@ const techFeatures = [
                 </svg>
               </div>
               <blockquote class="text-base leading-7 text-slate-700 dark:text-slate-300">
-                "Switched from a crowded shared server. Beeliin's hosting plans are transparent — free SSL was provisioned automatically and cPanel was ready immediately. Very smooth experience."
+                "Switched from a crowded shared server. Bilinix's hosting plans are transparent — free SSL was provisioned automatically and the control panel was ready immediately. Very smooth experience."
               </blockquote>
               <figcaption class="mt-5 flex items-center gap-3">
                 <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/15">

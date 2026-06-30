@@ -19,13 +19,13 @@ type TldEntry = {
 }
 
 useSeoMeta({
-  title: 'Domain Name Registration — .com from $9.99/yr | Beeliin',
+  title: 'Domain Name Registration — .com from $9.99/yr | Bilinix',
   description: 'Register .com, .net, .io, .dev and 100+ domain extensions. Instant registration, free DNS hosting, WHOIS privacy. Bundle with hosting or VPS in one cart.',
-  ogTitle: 'Domain Name Registration | Beeliin',
+  ogTitle: 'Domain Name Registration | Bilinix',
   ogDescription: 'Search and register .com, .net, .io, .dev and 100+ domain extensions. Instant activation with free DNS.',
   ogType: 'website',
   twitterCard: 'summary_large_image',
-  twitterTitle: 'Domain Names from $9.99/yr | Beeliin',
+  twitterTitle: 'Domain Names from $9.99/yr | Bilinix',
   twitterDescription: 'Register .com, .net, .io, .dev and 100+ TLDs. Instant activation with free DNS hosting.',
 })
 

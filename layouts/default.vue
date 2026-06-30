@@ -18,7 +18,7 @@ const productLinks = [
   {
     label: 'Shared Hosting',
     to: '/hosting',
-    desc: 'cPanel, NVMe SSD, free SSL',
+    desc: 'Control Panel, NVMe SSD, free SSL',
     icon: 'hosting',
   },
   {
@@ -50,12 +50,12 @@ const productLinks = [
       <nav class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
 
         <!-- Logo -->
-        <NuxtLink to="/" class="flex items-center gap-2.5" aria-label="Beeliin home">
+        <NuxtLink to="/" class="flex items-center gap-2.5" aria-label="Bilinix home">
           <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-sm font-black text-white shadow-glow-sm">
             B
           </span>
           <span class="flex flex-col">
-            <span class="text-[15px] font-black leading-tight tracking-tight text-slate-950 dark:text-white">Beeliin</span>
+            <span class="text-[15px] font-black leading-tight tracking-tight text-slate-950 dark:text-white">Bilinix</span>
             <span class="hidden text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:block">Hosting</span>
           </span>
         </NuxtLink>
@@ -146,7 +146,7 @@ const productLinks = [
           <div class="md:col-span-2">
             <NuxtLink to="/" class="flex items-center gap-2.5">
               <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-sm font-black text-white">B</span>
-              <span class="text-[15px] font-black text-slate-950 dark:text-white">Beeliin</span>
+              <span class="text-[15px] font-black text-slate-950 dark:text-white">Bilinix</span>
             </NuxtLink>
             <p class="mt-4 max-w-xs text-sm leading-6 text-slate-500 dark:text-slate-400">
               Hosting, VPS, dedicated servers, and domain registration. Built for customers who need clarity over complexity.
@@ -192,7 +192,7 @@ const productLinks = [
         </div>
 
         <div class="mt-10 flex flex-col items-start justify-between gap-4 border-t border-slate-200 pt-8 dark:border-slate-800 sm:flex-row sm:items-center">
-          <p class="text-sm text-slate-500 dark:text-slate-400">© {{ currentYear }} Beeliin Hosting. All rights reserved.</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400">© {{ currentYear }} Bilinix Hosting. All rights reserved.</p>
           <div class="flex items-center gap-3">
             <span class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
               <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" />

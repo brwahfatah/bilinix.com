@@ -4,13 +4,13 @@ import { dedicatedPlans } from '~/data/site'
 import { useCart } from '~/composables/useCart'
 
 useSeoMeta({
-  title: 'Dedicated Servers — Bare-Metal from $59.99/mo | Beeliin',
+  title: 'Dedicated Servers — Bare-Metal from $59.99/mo | Bilinix',
   description: 'Enterprise dedicated servers on OVH infrastructure. AMD EPYC and Intel Xeon processors, DDR4 ECC RAM, unmetered bandwidth, and full IPMI access.',
-  ogTitle: 'Dedicated Servers from $59.99/mo | Beeliin',
+  ogTitle: 'Dedicated Servers from $59.99/mo | Bilinix',
   ogDescription: 'Bare-metal dedicated servers with enterprise DDR4 ECC RAM, NVMe storage, and unmetered bandwidth. Full IPMI access.',
   ogType: 'website',
   twitterCard: 'summary_large_image',
-  twitterTitle: 'Dedicated Servers from $59.99/mo | Beeliin',
+  twitterTitle: 'Dedicated Servers from $59.99/mo | Bilinix',
   twitterDescription: 'Enterprise bare-metal servers. AMD EPYC & Intel Xeon, ECC RAM, unmetered bandwidth.',
 })
 

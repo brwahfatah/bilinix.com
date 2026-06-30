@@ -24,7 +24,7 @@ const workflow = [
         <SectionHeader
           eyebrow="Features"
           title="Everything important is connected."
-          description="Beeliin is structured around practical workflows: order services, manage them, and keep billing readable."
+          description="Bilinix is structured around practical workflows: order services, manage them, and keep billing readable."
           align="center"
         />
       </div>

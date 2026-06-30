@@ -21,7 +21,7 @@ const values = [
       <div class="mx-auto max-w-7xl">
         <SectionHeader
           eyebrow="About"
-          title="Beeliin is built to make hosting feel easier to manage."
+          title="Bilinix is built to make hosting feel easier to manage."
           description="The product brings service ordering, domain registration, VPS management, and billing into one calmer flow."
           align="center"
         />

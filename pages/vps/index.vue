@@ -20,13 +20,13 @@ type VpsPlan = {
 }
 
 useSeoMeta({
-  title: 'Cloud VPS Hosting — KVM, NVMe SSD from $5.99/mo | Beeliin',
+  title: 'Cloud VPS Hosting — KVM, NVMe SSD from $5.99/mo | Bilinix',
   description: 'Deploy a KVM VPS with NVMe SSD storage in under 2 minutes. Full root access, DDoS protection included, 6 global datacenter locations. Cancel anytime.',
-  ogTitle: 'Cloud VPS Hosting from $5.99/mo | Beeliin',
+  ogTitle: 'Cloud VPS Hosting from $5.99/mo | Bilinix',
   ogDescription: 'KVM VPS with NVMe SSD, full root access, and DDoS protection. Deploy in under 2 minutes.',
   ogType: 'website',
   twitterCard: 'summary_large_image',
-  twitterTitle: 'Cloud VPS from $5.99/mo | Beeliin',
+  twitterTitle: 'Cloud VPS from $5.99/mo | Bilinix',
   twitterDescription: 'Deploy a KVM VPS in under 2 minutes. NVMe SSD, root access, DDoS protection.',
 })
 
@@ -327,7 +327,7 @@ onMounted(async () => {
         <div class="grid gap-8 lg:grid-cols-[1fr_1.6fr] lg:items-center">
           <div>
             <p class="text-sm font-bold uppercase tracking-widest text-sky-600 dark:text-sky-400">Trusted by developers</p>
-            <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-950 dark:text-white">Teams deploy on Beeliin every day.</h2>
+            <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-950 dark:text-white">Teams deploy on Bilinix every day.</h2>
             <div class="mt-6 grid grid-cols-2 gap-4">
               <div class="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
                 <p class="text-2xl font-black text-slate-950 dark:text-white">&lt;&nbsp;2 min</p>

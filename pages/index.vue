@@ -3,13 +3,13 @@ import { computed, ref } from 'vue'
 import { homeFeatures, hostingPlans, testimonials, faqs } from '~/data/site'
 
 useSeoMeta({
-  title: 'Beeliin Hosting — Cloud VPS, Shared Hosting & Domains',
+  title: 'Bilinix Hosting — Cloud VPS, Shared Hosting & Domains',
   description: 'High-performance VPS, shared hosting, dedicated servers, and domain registration. NVMe SSD, 99.9% uptime SLA, 24/7 support. Deploy in minutes.',
-  ogTitle: 'Beeliin Hosting — Cloud VPS, Shared Hosting & Domains',
+  ogTitle: 'Bilinix Hosting — Cloud VPS, Shared Hosting & Domains',
   ogDescription: 'High-performance VPS, shared hosting, dedicated servers, and domain registration. NVMe SSD, 99.9% uptime SLA.',
   ogType: 'website',
   twitterCard: 'summary_large_image',
-  twitterTitle: 'Beeliin Hosting',
+  twitterTitle: 'Bilinix Hosting',
   twitterDescription: 'High-performance VPS, shared hosting, and domains. NVMe SSD, 99.9% uptime SLA, 24/7 support.',
 })
 
@@ -56,7 +56,7 @@ const trustStats = [
   <UiSectionHeader
           eyebrow="Platform"
           title="A cleaner path from order to operation"
-          description="Public pages, cart, checkout, dashboard, and billing should feel connected. These are the core flows Beeliin is built around."
+          description="Public pages, cart, checkout, dashboard, and billing should feel connected. These are the core flows Bilinix is built around."
           align="center"
         />
 
@@ -159,7 +159,7 @@ const trustStats = [
       <div class="mx-auto max-w-7xl">
         <UiSectionHeader
           eyebrow="Trusted by 2,400+ businesses"
-          title="Teams that switched to Beeliin"
+          title="Teams that switched to Bilinix"
           description="Real businesses running production workloads on our infrastructure."
           align="center"
         />

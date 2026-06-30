@@ -22,7 +22,7 @@ export type HostingPlan = {
     databases: string
     ssl: boolean
     ftp: boolean
-    cpanel: boolean
+    controlPanel: boolean
     backups: string
   }
 }
@@ -166,7 +166,7 @@ export const hostingPlans: HostingPlan[] = [
       '5 Databases',
       'Free SSL Certificate',
       'FTP Access',
-      'cPanel Included',
+      'Control Panel Included',
       'Weekly Backups',
     ],
     limits: {
@@ -177,7 +177,7 @@ export const hostingPlans: HostingPlan[] = [
       databases: '5',
       ssl: true,
       ftp: true,
-      cpanel: true,
+      controlPanel: true,
       backups: 'Weekly',
     },
   },
@@ -199,7 +199,7 @@ export const hostingPlans: HostingPlan[] = [
       'Unlimited Databases',
       'Free SSL Certificate',
       'FTP Access',
-      'cPanel Included',
+      'Control Panel Included',
       'Daily Backups',
       'Priority Support',
     ],
@@ -211,7 +211,7 @@ export const hostingPlans: HostingPlan[] = [
       databases: 'Unlimited',
       ssl: true,
       ftp: true,
-      cpanel: true,
+      controlPanel: true,
       backups: 'Daily',
     },
   },
@@ -232,7 +232,7 @@ export const hostingPlans: HostingPlan[] = [
       'Unlimited Databases',
       'Free SSL Certificate',
       'FTP Access',
-      'cPanel Included',
+      'Control Panel Included',
       'Daily Backups',
       'Dedicated IP Address',
       'Priority Support',
@@ -245,7 +245,7 @@ export const hostingPlans: HostingPlan[] = [
       databases: 'Unlimited',
       ssl: true,
       ftp: true,
-      cpanel: true,
+      controlPanel: true,
       backups: 'Daily',
     },
   },
@@ -443,7 +443,7 @@ export const testimonials: Testimonial[] = [
     initials: 'AR',
   },
   {
-    quote: 'Switched from cPanel on a crowded server. Beeliin\'s hosting plans are transparent and the free SSL was provisioned automatically. Very smooth.',
+    quote: 'Switched from a crowded server. Bilinix\'s hosting plans are transparent and the free SSL was provisioned automatically. Very smooth.',
     name: 'Lena Brandt',
     role: 'Operations Lead',
     company: 'Brandhaus',

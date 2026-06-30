@@ -56,7 +56,7 @@ function laravelToDomain(d: LaravelDomain): Domain {
   const nameservers =
     Array.isArray(d.nameservers) && d.nameservers.length >= 2
       ? d.nameservers
-      : ['ns1.beeliin.com', 'ns2.beeliin.com']
+      : ['ns1.bilinix.com', 'ns2.bilinix.com']
 
   return {
     id: String(d.id),

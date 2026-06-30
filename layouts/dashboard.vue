@@ -117,7 +117,7 @@ function doLogout(everywhere = false) {
               B
             </span>
             <div>
-              <span class="block text-sm font-black text-slate-950 dark:text-white">Beeliin</span>
+              <span class="block text-sm font-black text-slate-950 dark:text-white">Bilinix</span>
               <span class="block text-[10px] font-semibold uppercase tracking-widest text-slate-400">Client Area</span>
             </div>
           </NuxtLink>
@@ -199,7 +199,7 @@ function doLogout(everywhere = false) {
             </button>
             <!-- Breadcrumb -->
             <div class="flex items-center gap-2 text-sm">
-              <span class="font-black text-slate-950 dark:text-white">Beeliin</span>
+              <span class="font-black text-slate-950 dark:text-white">Bilinix</span>
               <span class="text-slate-300 dark:text-slate-700">/</span>
               <span class="capitalize text-slate-500 dark:text-slate-400">{{ route.path.split('/')[2] || 'dashboard' }}</span>
             </div>

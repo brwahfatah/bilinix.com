@@ -85,7 +85,7 @@ const submit = async () => {
         <div class="relative">
           <NuxtLink to="/" class="flex items-center gap-2.5">
             <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-sm font-black text-white">B</span>
-            <span class="text-[15px] font-black text-white">Beeliin</span>
+            <span class="text-[15px] font-black text-white">Bilinix</span>
           </NuxtLink>
         </div>
 
@@ -115,7 +115,7 @@ const submit = async () => {
         </div>
 
         <div class="relative">
-          <p class="text-xs text-slate-600">© {{ new Date().getFullYear() }} Beeliin Hosting</p>
+          <p class="text-xs text-slate-600">© {{ new Date().getFullYear() }} Bilinix Hosting</p>
         </div>
       </div>
 
@@ -125,7 +125,7 @@ const submit = async () => {
           <!-- Mobile logo -->
           <NuxtLink to="/" class="mb-8 flex items-center gap-2.5 lg:hidden">
             <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-sm font-black text-white">B</span>
-            <span class="text-[15px] font-black text-slate-950 dark:text-white">Beeliin</span>
+            <span class="text-[15px] font-black text-slate-950 dark:text-white">Bilinix</span>
           </NuxtLink>
 
           <div>

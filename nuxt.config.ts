@@ -46,7 +46,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     // Server-only — set via environment variables, never exposed to the client
-    whmcsApiUrl: '',           // e.g. https://billing.beeliin.com/includes/api.php
+    whmcsApiUrl: '',           // e.g. https://billing.bilinix.com/includes/api.php
     whmcsApiIdentifier: '',    // WHMCS API identifier
     whmcsApiSecret: '',        // WHMCS API secret
     whmcsAccessKey: '',        // WHMCS access key (optional)
@@ -74,7 +74,7 @@ export default defineNuxtConfig({
     smtpFrom: '',              // NUXT_SMTP_FROM  e.g. "Bilinix Hosting <noreply@bilinix.com>"
     public: {
       apiBase: 'http://localhost:8000/api',
-      appName: 'Beeliin Hosting',
+      appName: 'Bilinix Hosting',
       appEnv: 'development',
       enableDevMocks: false,
       // Payment feature flags

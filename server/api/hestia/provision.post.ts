@@ -20,7 +20,7 @@ const asString = (v: unknown, fallback = '') =>
  *
  * Body:
  *   email        string   Customer email (used as login + to derive username)
- *   password     string   Desired cPanel/mail/FTP password (min 8 chars)
+ *   password     string   Desired control-panel/mail/FTP password (min 8 chars)
  *   package      string   STARTER | BUSINESS | AGENCY
  *   domain?      string   Primary domain to add to the account (optional)
  *   username?    string   Override the auto-derived username (optional)
