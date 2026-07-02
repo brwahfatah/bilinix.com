@@ -13,7 +13,8 @@ interface LaravelTicket {
   replies: Array<{
     id: string
     message: string    // body text — field name is "message" not "body"
-    author: string     // display name — no author_role field
+    author: string
+    author_role?: string
     created_at: string
   }>
 }
@@ -71,7 +72,7 @@ function laravelToTicket(t: LaravelTicket): Ticket {
     id: String(r.id),
     ticketId: String(t.id),
     authorName: r.author,
-    authorRole: 'support' as const,   // Laravel doesn't return role; default to support
+    authorRole: (r.author_role === 'client' ? 'client' : 'support') as const,
     body: r.message,
     createdAt: r.created_at,
   }))

@@ -65,13 +65,6 @@ const FALLBACK_ACTIVITY_CONFIG = {
   iconColor: 'text-slate-500 dark:text-slate-400',
 }
 
-// Pre-seeded history so feed is never empty on first load
-const SEED_ACTIVITIES: DashboardActivity[] = [
-  { id: 'seed-1', type: 'vps:created', label: 'VPS "web-prod-01" deployed', meta: 'Frankfurt, DE', timestamp: new Date(Date.now() - 2 * 3600_000) },
-  { id: 'seed-2', type: 'invoice:paid', label: 'Invoice INV-2025-001 paid', meta: '$43.97', timestamp: new Date(Date.now() - 5 * 3600_000) },
-  { id: 'seed-3', type: 'vps:power-action', label: 'VPS "db-staging" stopped', meta: 'Amsterdam, NL', timestamp: new Date(Date.now() - 24 * 3600_000) },
-  { id: 'seed-4', type: 'vps:created', label: 'VPS "ci-runner-01" provisioning', meta: 'Paris, FR', timestamp: new Date(Date.now() - 48 * 3600_000) },
-]
 
 // ---------------------------------------------------------------------------
 // Relative time helper
@@ -98,8 +91,8 @@ export function useDashboard() {
   const auth = useAuthStore()
   const events = useAppEvents()
 
-  // Activity feed — seeded with history, prepended as live events arrive
-  const activities = ref<DashboardActivity[]>([...SEED_ACTIVITIES])
+  // Activity feed — populated as live events arrive during the session
+  const activities = ref<DashboardActivity[]>([])
 
   function pushActivity(type: AppEventName, label: string, meta?: string) {
     activities.value.unshift({

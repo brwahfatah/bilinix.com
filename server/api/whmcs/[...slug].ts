@@ -284,8 +284,7 @@ const buildOrderPayloadFromCart = (clientId: number, items: CartItem[]) => {
 
   const payload: WhmcsRequestPayload = {
     clientid: clientId,
-    paymentmethod: 'mailin',
-    noinvoice: false,
+    paymentmethod: 'banktransfer',
     noemail: true
   }
 
@@ -953,7 +952,7 @@ export default defineEventHandler(async (event) => {
       ...replies.map((r, i) => ({
         id: `msg-${ticketId}-${i + 1}`,
         author_name: asString(r.adminname || r.name || 'Support'),
-        author_role: (r.adminid ? 'support' : 'client') as 'client' | 'support',
+        author_role: (r.admin ? 'support' : 'client') as 'client' | 'support',
         body: asString(r.message || ''),
         created_at: asString(r.date || new Date().toISOString()),
       })),
@@ -1074,7 +1073,7 @@ export default defineEventHandler(async (event) => {
       ...replies.map((r, i) => ({
         id: `msg-${ticketId}-${i + 1}`,
         author_name: asString(r.adminname || r.name || 'Support'),
-        author_role: (r.adminid ? 'support' : 'client') as 'client' | 'support',
+        author_role: (r.admin ? 'support' : 'client') as 'client' | 'support',
         body: asString(r.message || ''),
         created_at: asString(r.date || new Date().toISOString()),
       })),
@@ -1103,7 +1102,7 @@ export default defineEventHandler(async (event) => {
     if (!ticketId) {
       throw createError({ statusCode: 400, statusMessage: 'Invalid ticket id' })
     }
-    await callWhmcsApi('CloseTicket', { ticketid: ticketId })
+    await callWhmcsApi('UpdateTicket', { ticketid: ticketId, status: 'Closed' })
     const result = await callWhmcsApi('GetTicket', { ticketid: ticketId })
     const t = result as any
     return {

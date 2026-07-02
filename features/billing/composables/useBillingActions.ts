@@ -68,7 +68,7 @@ export function useBillingActions() {
 
     const confirmed = await modal.confirm(
       `Pay ${entity.displayAmount} with Crypto?`,
-      `You will be redirected to NOWPayments to complete payment via USDT (TRC20 or BEP20).`,
+      `You will be redirected to NOWPayments to complete your crypto payment.`,
       { confirmLabel: 'Continue to payment', variant: 'info' },
     )
     if (!confirmed) return { ok: false }
