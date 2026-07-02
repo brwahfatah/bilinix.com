@@ -18,13 +18,19 @@ useSeoMeta({
 const router = useRouter()
 const { addItem, items } = useCart()
 
-const billing = ref<'monthly' | 'yearly'>('monthly')
+const billing = ref<'monthly' | 'yearly'>('yearly')
 
 const computedPlans = computed(() =>
-  hostingPlans.map((plan) => ({
-    ...plan,
-    price: billing.value === 'monthly' ? plan.monthly : plan.yearly,
-  }))
+  hostingPlans.map((plan) => {
+    const canMonthly = plan.allowed_cycles.includes('monthly')
+    const effectiveBilling = (billing.value === 'monthly' && !canMonthly) ? 'yearly' : billing.value
+    return {
+      ...plan,
+      price: effectiveBilling === 'monthly' ? plan.monthly : plan.yearly,
+      effectiveBilling,
+      annualOnly: !canMonthly,
+    }
+  })
 )
 
 const planInCart = (planId: number) =>
@@ -37,12 +43,12 @@ const selectPlan = async (plan: (typeof computedPlans.value)[0]) => {
   }
 
   await addItem({
-    id: `hosting-${plan.id}-${billing.value}`,
+    id: `hosting-${plan.id}-${plan.effectiveBilling}`,
     type: 'server',
     name: `${plan.name} Hosting`,
     price: plan.price,
-    period: billing.value === 'yearly' ? 12 : 1,
-    periodLabel: billing.value === 'yearly' ? 'Yearly' : 'Monthly',
+    period: plan.effectiveBilling === 'yearly' ? 12 : 1,
+    periodLabel: plan.effectiveBilling === 'yearly' ? 'Yearly' : 'Monthly',
     meta: {
       whmcs_product_id: plan.whmcs_product_id || plan.id,
       plan_id: plan.id,
@@ -305,15 +311,19 @@ const techFeatures = [
               </p>
             </div>
 
-            <div class="mt-7 flex items-end gap-1">
+            <div v-if="plan.annualOnly && billing === 'monthly'" class="mb-2 mt-5">
+              <span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-amber-700 dark:bg-amber-400/10 dark:text-amber-400">Annual billing only</span>
+            </div>
+
+            <div class="flex items-end gap-1" :class="plan.annualOnly && billing === 'monthly' ? 'mt-3' : 'mt-7'">
               <span class="text-5xl font-black tabular-nums"
                 :class="plan.popular ? 'text-white' : 'text-slate-950 dark:text-white'">
                 ${{ plan.price.toFixed(2) }}
               </span>
-              <span class="mb-1.5 text-sm font-semibold text-slate-400">/{{ billing === 'yearly' ? 'yr' : 'mo' }}</span>
+              <span class="mb-1.5 text-sm font-semibold text-slate-400">/{{ plan.effectiveBilling === 'yearly' ? 'yr' : 'mo' }}</span>
             </div>
-            <p v-if="billing === 'yearly'" class="mt-1 text-xs text-emerald-400">
-              Save ${{ ((plan.monthly * 12) - plan.yearly).toFixed(2) }} annually
+            <p v-if="plan.effectiveBilling === 'yearly'" class="mt-1 text-xs text-emerald-400">
+              ${{ (plan.yearly / 12).toFixed(2) }}/mo — save {{ Math.round((1 - plan.yearly / (plan.monthly * 12)) * 100) }}% vs monthly
             </p>
 
             <ul class="mt-7 flex-1 space-y-2.5">

@@ -13,13 +13,19 @@ useSeoMeta({
   twitterDescription: 'High-performance VPS, shared hosting, and domains. NVMe SSD, 99.9% uptime SLA, 24/7 support.',
 })
 
-const billing = ref<'monthly' | 'yearly'>('monthly')
+const billing = ref<'monthly' | 'yearly'>('yearly')
 
 const computedPlans = computed(() =>
-  hostingPlans.map((plan) => ({
-    ...plan,
-    price: billing.value === 'monthly' ? plan.monthly : plan.yearly
-  }))
+  hostingPlans.map((plan) => {
+    const canMonthly = plan.allowed_cycles.includes('monthly')
+    const effectiveBilling = (billing.value === 'monthly' && !canMonthly) ? 'yearly' : billing.value
+    return {
+      ...plan,
+      price: effectiveBilling === 'monthly' ? plan.monthly : plan.yearly,
+      effectiveBilling,
+      annualOnly: !canMonthly,
+    }
+  })
 )
 
 const trustStats = [

@@ -1,14 +1,30 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+
+const props = defineProps<{
   plan: {
     name: string
     description: string
     price: number
+    monthly?: number
+    yearly?: number
     features: string[]
     popular?: boolean
+    effectiveBilling?: string
+    annualOnly?: boolean
   }
   billing: string
 }>()
+
+const savingsPercent = computed(() => {
+  if (!props.plan.monthly || !props.plan.yearly) return 0
+  return Math.round((1 - props.plan.yearly / (props.plan.monthly * 12)) * 100)
+})
+
+const perMonth = computed(() => {
+  if (!props.plan.yearly) return 0
+  return (props.plan.yearly / 12).toFixed(2)
+})
 </script>
 
 <template>
@@ -32,9 +48,16 @@ defineProps<{
       </p>
     </div>
 
-    <div class="mt-8">
+    <div v-if="plan.annualOnly && billing === 'monthly'" class="mt-6">
+      <span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-amber-700 dark:bg-amber-400/10 dark:text-amber-400">Annual billing only</span>
+    </div>
+
+    <div :class="plan.annualOnly && billing === 'monthly' ? 'mt-4' : 'mt-8'">
       <span class="text-4xl font-black text-slate-950 dark:text-white">${{ plan.price }}</span>
-      <span class="text-sm text-slate-500 dark:text-slate-400"> / {{ billing }}</span>
+      <span class="text-sm text-slate-500 dark:text-slate-400"> / {{ (plan.effectiveBilling || billing) === 'yearly' ? 'yr' : 'mo' }}</span>
+      <p v-if="(plan.effectiveBilling || billing) === 'yearly' && savingsPercent > 0" class="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+        ${{ perMonth }}/mo — save {{ savingsPercent }}% vs monthly
+      </p>
     </div>
 
     <ul class="mt-8 flex-1 space-y-3">

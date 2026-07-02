@@ -3,6 +3,8 @@ export type NavItem = {
   to: string
 }
 
+export type BillingCycle = 'monthly' | 'annually'
+
 export type HostingPlan = {
   id: number
   name: string
@@ -10,6 +12,7 @@ export type HostingPlan = {
   description: string
   monthly: number
   yearly: number
+  allowed_cycles: BillingCycle[]
   features: string[]
   popular?: boolean
   badge?: string
@@ -156,7 +159,8 @@ export const hostingPlans: HostingPlan[] = [
     tagline: 'For personal sites and blogs',
     description: 'A clean plan for side projects, portfolios, and small launches.',
     monthly: 2.99,
-    yearly: 23.99,
+    yearly: 28.70,
+    allowed_cycles: ['annually'],
     whmcs_product_id: 1,
     features: [
       '1 Website',
@@ -187,7 +191,8 @@ export const hostingPlans: HostingPlan[] = [
     tagline: 'For growing sites and shops',
     description: 'More room for client projects, WooCommerce, and WordPress multisite.',
     monthly: 5.99,
-    yearly: 47.99,
+    yearly: 57.50,
+    allowed_cycles: ['annually'],
     whmcs_product_id: 2,
     popular: true,
     badge: 'Most Popular',
@@ -221,7 +226,8 @@ export const hostingPlans: HostingPlan[] = [
     tagline: 'For agencies and high-traffic sites',
     description: 'High capacity for client portfolios, busy stores, and growing teams.',
     monthly: 10.99,
-    yearly: 87.99,
+    yearly: 105.50,
+    allowed_cycles: ['monthly', 'annually'],
     whmcs_product_id: 3,
     badge: 'Best Value',
     features: [

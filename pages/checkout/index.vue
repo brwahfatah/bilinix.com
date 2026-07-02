@@ -17,8 +17,11 @@ const form = reactive({
   password_confirmation: ''
 })
 
+const CRYPTO_MIN_TOTAL = 10
+
 const cart = computed(() => items.value || [])
 const cartEmpty = computed(() => cart.value.length === 0)
+const belowMinimum = computed(() => total.value > 0 && total.value < CRYPTO_MIN_TOTAL)
 const isLoggedIn = computed(() => auth.isAuthenticated)
 const formatPrice = (value: number) => Number(value || 0).toFixed(2)
 
@@ -42,6 +45,10 @@ const validateForm = () => {
 
 const placeOrder = async () => {
   if (loading.value || cartEmpty.value) return
+  if (belowMinimum.value) {
+    error.value = `Order total must be at least $${CRYPTO_MIN_TOTAL}. Hosting plans are billed annually — monthly billing returns when card payments are added.`
+    return
+  }
   if (!isLoggedIn.value && !validateForm()) return
 
   loading.value = true
@@ -93,6 +100,10 @@ const placeOrder = async () => {
           </h2>
           <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
             {{ isLoggedIn ? 'You are signed in and ready to place the order.' : 'Sign in or create an account to continue.' }}
+          </p>
+
+          <p v-if="belowMinimum" class="mt-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-300">
+            Order total is ${{ formatPrice(total) }} — crypto payments require a minimum of ${{ CRYPTO_MIN_TOTAL }}. This plan is billed annually. Monthly billing returns when card payments are added.
           </p>
 
           <p v-if="error" class="mt-5 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-300">
@@ -153,7 +164,7 @@ const placeOrder = async () => {
           <button
             type="button"
             class="mt-8 w-full rounded-lg bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-            :disabled="loading || cartEmpty"
+            :disabled="loading || cartEmpty || belowMinimum"
             @click="placeOrder"
           >
             {{ loading ? 'Creating invoice...' : (isLoggedIn ? 'Create Invoice' : 'Place Order') }}
