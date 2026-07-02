@@ -17,7 +17,6 @@ export default defineEventHandler(async (event) => {
   const runtime = useRuntimeConfig()
   const isFake = String(runtime.whmcsDriver) === 'fake'
 
-  // Require a Bearer token (Sanctum token stored in browser localStorage)
   const authHeader = getRequestHeader(event, 'authorization') ?? ''
   if (!authHeader.startsWith('Bearer ')) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthenticated' })
@@ -26,14 +25,11 @@ export default defineEventHandler(async (event) => {
   let userEmail = ''
 
   if (!isFake) {
-    // Production: verify the Sanctum token against the Laravel /auth/me endpoint
-    // and capture the user's email for Hestia provisioning metadata
     const apiBase = asString(runtime.public.apiBase)
     try {
       const me = (await $fetch(`${apiBase}/auth/me`, {
         headers: { authorization: authHeader },
       })) as Record<string, any>
-      // Laravel /auth/me returns { data: { email } } or { user: { email } }
       userEmail = asString(me?.data?.email ?? me?.user?.email ?? me?.email ?? '').toLowerCase()
     } catch {
       throw createError({ statusCode: 401, statusMessage: 'Unauthenticated' })
@@ -43,9 +39,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<{
     invoice_id?: string | number
     amount?: number
-    // Dev/fake only: caller supplies email when auth is not validated server-side
     email?: string
-    // Optional: triggers Hestia hosting provisioning after payment completes
     hosting_package?: string
     hosting_domain?: string
   }>(event)
@@ -55,7 +49,6 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 422, statusMessage: 'invoice_id is required' })
   }
 
-  // In fake mode accept email from the request body (no real session to validate)
   if (isFake && body?.email) {
     userEmail = asString(body.email).trim().toLowerCase()
   }
@@ -65,14 +58,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 503, statusMessage: 'Crypto payments are not configured' })
   }
 
-  // NOWPayments enforces a minimum ~$18.82; guard at $20 to stay safely above it
-  const NP_MIN_USD = 20
-
   let amount: number
   let invoiceNum: string
 
   if (isFake) {
-    // Fake/dev mode: use amount from request body or default to $1.00 test
     amount = asNumber(body?.amount, 1.00)
     invoiceNum = `FAKE-${invoiceId}`
     console.log(`[NOWPayments][FAKE] Creating test payment for invoice #${invoiceId}, amount: $${amount}`)
@@ -86,22 +75,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  if (amount < NP_MIN_USD) {
-    console.log(
-      `[NOWPayments] Blocked invoice #${invoiceId}: amount $${amount} is below minimum $${NP_MIN_USD}`,
-    )
-    throw createError({
-      statusCode: 400,
-      statusMessage: `Minimum crypto payment is $${NP_MIN_USD}. This invoice total ($${amount}) is too low for crypto payments.`,
-    })
-  }
-
   // ── Hestia provisioning metadata ────────────────────────────────────────────
-  // Store email + package now so the webhook can provision the account after
-  // payment completes. We only store if all three conditions are met:
-  //   1. A valid hosting package was requested
-  //   2. We have the customer's email
-  //   3. Hestia is configured (has apiUrl + apiKey)
   const hostingPackageRaw = asString(body?.hosting_package).toUpperCase()
   const hostingPackage = (VALID_HESTIA_PACKAGES as readonly string[]).includes(hostingPackageRaw)
     ? hostingPackageRaw
@@ -122,10 +96,14 @@ export default defineEventHandler(async (event) => {
       `[Hestia] Queued provisioning for invoice #${invoiceId}: ${userEmail} pkg=${hostingPackage}`,
     )
   }
-  // ── End Hestia metadata ──────────────────────────────────────────────────────
 
   console.log(`[NOWPayments] Creating invoice #${invoiceId}, amount: $${amount}`)
 
+  // Send amount in USD, do NOT force a pay_currency — the payer selects
+  // their coin/network on the NOWPayments payment page. Low-minimum coins
+  // (USDT-TRC20, LTC, TRX, XLM) become available automatically.
+  // is_fee_paid_by_user: true — the customer covers the network fee,
+  // so the invoice amount itself can be as low as ~$1.
   const nowPayment = (await $fetch('https://api.nowpayments.io/v1/invoice', {
     method: 'POST',
     headers: {
@@ -135,14 +113,13 @@ export default defineEventHandler(async (event) => {
     body: JSON.stringify({
       price_amount: amount,
       price_currency: 'usd',
-      pay_currency: 'usdttrc20',
       order_id: String(invoiceId),
       order_description: `Invoice #${invoiceNum}`,
       ipn_callback_url: 'https://bilinix.com/api/payments/webhook/nowpayments',
       success_url: 'https://bilinix.com/dashboard/billing/invoices?payment=success',
       cancel_url: 'https://bilinix.com/dashboard/billing/invoices?payment=cancelled',
       is_fixed_rate: false,
-      is_fee_paid_by_user: false,
+      is_fee_paid_by_user: true,
     }),
   })) as { id: string; invoice_url: string }
 
