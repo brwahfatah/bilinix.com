@@ -65,6 +65,9 @@ const FALLBACK_VPS_PLANS = [
   }
 ]
 
+const HOSTING_PRODUCT_IDS = new Set([1, 2, 3])
+const HESTIA_PANEL_PORT = 8083
+
 const asNumber = (value: unknown, fallback = 0) => {
   const n = Number(value)
   return Number.isFinite(n) ? n : fallback
@@ -165,6 +168,43 @@ const getClientServices = async (clientId: number) => {
 
   const products = toArray<Record<string, any>>((result as any).products)
   return products.map(normalizeService)
+}
+
+const normalizeHostingAccount = (service: Record<string, any>) => {
+  const hostname = asString(service.serverhostname || service.serverip || 'server1.bilinix.com')
+  const panelBase = hostname.startsWith('http') ? hostname : `https://${hostname}`
+  const panelUrl = `${panelBase.replace(/:\d+$/, '')}:${HESTIA_PANEL_PORT}`
+
+  return {
+    id: String(asNumber(service.id)),
+    plan: asString(service.productname || service.name || service.groupname || 'Hosting Plan'),
+    domain: asString(service.domain || ''),
+    status: asString(service.status || 'Pending'),
+    billing_cycle: asString(service.billingcycle || ''),
+    registration_date: asString(service.regdate || ''),
+    next_due_date: asString(service.nextduedate || ''),
+    recurring_amount: asString(service.recurringamount || '0.00'),
+    server_hostname: asString(service.serverhostname || ''),
+    disk_usage: asNumber(service.diskusage),
+    disk_limit: asNumber(service.disklimit),
+    bw_usage: asNumber(service.bwusage),
+    bw_limit: asNumber(service.bwlimit),
+    username: asString(service.username || ''),
+    control_panel_url: panelUrl,
+  }
+}
+
+const getClientHostingAccounts = async (clientId: number) => {
+  const result = await callWhmcsApi('GetClientsProducts', {
+    clientid: clientId,
+    limitnum: 500,
+    stats: true
+  })
+
+  const products = toArray<Record<string, any>>((result as any).products)
+  return products
+    .filter((p) => HOSTING_PRODUCT_IDS.has(asNumber(p.pid)))
+    .map(normalizeHostingAccount)
 }
 
 const normalizeDomain = (domain: Record<string, any>) => {
@@ -623,6 +663,28 @@ export default defineEventHandler(async (event) => {
         unpaid: unpaidInvoices
       }
     }
+  }
+
+  // ── HOSTING: list ──────────────────────────────────────────────────────────
+  if (method === 'GET' && path === 'hosting') {
+    const clientId = extractClientId(event)
+    const accounts = await getClientHostingAccounts(clientId)
+    return { data: accounts, message: 'OK', errors: null }
+  }
+
+  // ── HOSTING: get single ───────────────────────────────────────────────────
+  if (method === 'GET' && slug[0] === 'hosting' && slug.length === 2) {
+    const clientId = extractClientId(event)
+    const accountId = slug[1]!
+
+    const accounts = await getClientHostingAccounts(clientId)
+    const account = accounts.find((a) => a.id === accountId)
+
+    if (!account) {
+      throw createError({ statusCode: 404, statusMessage: 'Hosting account not found' })
+    }
+
+    return { data: account, message: 'OK', errors: null }
   }
 
   if (method === 'GET' && path === 'servers') {

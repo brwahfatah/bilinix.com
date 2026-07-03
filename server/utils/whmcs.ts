@@ -150,9 +150,15 @@ const fakeWhmcsApi = (
       }
     case 'GetClientsProducts':
       return { result: 'success', products: { product: [
-        { id: 501, name: 'Starter VPS', domain: 'demo.bilinix.com', status: 'Active',
-          dedicatedip: '10.0.0.1', productname: 'Starter VPS', billingcycle: 'monthly',
-          nextduedate: '2026-07-25' }
+        { id: 501, pid: 10, name: 'Starter VPS', domain: 'demo.bilinix.com', status: 'Active',
+          dedicatedip: '10.0.0.1', productname: 'Starter VPS', groupname: 'VPS',
+          billingcycle: 'monthly', nextduedate: '2026-07-25' },
+        { id: 601, pid: 1, name: 'Starter Hosting', domain: 'demo-site.com', status: 'Active',
+          productname: 'Starter Hosting', groupname: 'Shared Hosting',
+          billingcycle: 'annually', regdate: '2026-01-15', nextduedate: '2027-01-15',
+          recurringamount: '29.00', serverhostname: 'server1.bilinix.com',
+          diskusage: 256, disklimit: 5120, bwusage: 1024, bwlimit: 51200,
+          username: 'demouser' }
       ] } }
     case 'GetClientsDomains':
       if (payload.domainid) {
