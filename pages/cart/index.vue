@@ -118,7 +118,11 @@ const proceedToCheckout = async () => {
                       <dt class="font-bold uppercase tracking-widest text-slate-400">Location</dt>
                       <dd>{{ item.meta.location }}</dd>
                     </div>
-                    <div v-if="item.meta?.domain || item.meta?.tld" class="flex gap-1.5">
+                    <div v-if="item.meta?.product_type === 'hosting' && item.meta?.domain" class="flex gap-1.5">
+                      <dt class="font-bold uppercase tracking-widest text-slate-400">Domain</dt>
+                      <dd>{{ item.meta.domain }}</dd>
+                    </div>
+                    <div v-else-if="item.meta?.domain || item.meta?.tld" class="flex gap-1.5">
                       <dt class="font-bold uppercase tracking-widest text-slate-400">TLD</dt>
                       <dd>{{ item.meta?.tld }}</dd>
                     </div>
