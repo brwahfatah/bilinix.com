@@ -99,11 +99,6 @@ export default defineEventHandler(async (event) => {
 
   console.log(`[NOWPayments] Creating invoice #${invoiceId}, amount: $${amount}`)
 
-  // Send amount in USD, do NOT force a pay_currency — the payer selects
-  // their coin/network on the NOWPayments payment page. Low-minimum coins
-  // (USDT-TRC20, LTC, TRX, XLM) become available automatically.
-  // is_fee_paid_by_user: true — the customer covers the network fee,
-  // so the invoice amount itself can be as low as ~$1.
   const nowPayment = (await $fetch('https://api.nowpayments.io/v1/invoice', {
     method: 'POST',
     headers: {
@@ -113,12 +108,13 @@ export default defineEventHandler(async (event) => {
     body: JSON.stringify({
       price_amount: amount,
       price_currency: 'usd',
+      pay_currency: 'usdttrc20',
       order_id: String(invoiceId),
       order_description: `Invoice #${invoiceNum}`,
       ipn_callback_url: 'https://bilinix.com/api/payments/webhook/nowpayments',
       success_url: 'https://bilinix.com/dashboard/billing/invoices?payment=success',
       cancel_url: 'https://bilinix.com/dashboard/billing/invoices?payment=cancelled',
-      is_fixed_rate: false,
+      is_fixed_rate: true,
       is_fee_paid_by_user: true,
     }),
   })) as { id: string; invoice_url: string }

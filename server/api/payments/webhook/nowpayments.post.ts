@@ -150,6 +150,29 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid order_id in payload' })
   }
 
+  const transid = String(payment_id)
+
+  // ── Deduplication: skip if this payment_id was already recorded ──────────────
+  if (!isFake) {
+    try {
+      const existing = await callWhmcsApi('GetTransactions', {
+        invoiceid: invoiceId,
+        transid,
+      }) as Record<string, any>
+      const txns = existing?.transactions?.transaction
+      const alreadyRecorded = Array.isArray(txns)
+        ? txns.some((t: any) => String(t.transid) === transid)
+        : false
+      if (alreadyRecorded) {
+        console.log(`[NOWPayments] Duplicate webhook for invoice #${invoiceId}, transid ${transid} — skipping`)
+        setResponseStatus(event, 200)
+        return { ok: true, duplicate: true }
+      }
+    } catch {
+      // If GetTransactions fails, proceed with payment recording to avoid blocking legitimate payments
+    }
+  }
+
   // ── Step 1: mark invoice paid ────────────────────────────────────────────────
   if (isFake) {
     console.log(
@@ -158,7 +181,7 @@ export default defineEventHandler(async (event) => {
   } else {
     await callWhmcsApi('AddInvoicePayment', {
       invoiceid: invoiceId,
-      transid: String(payment_id),
+      transid,
       gateway: 'nowpayments',
       date: new Date().toISOString().split('T')[0]!,
       amount: Number(actually_paid ?? 0),

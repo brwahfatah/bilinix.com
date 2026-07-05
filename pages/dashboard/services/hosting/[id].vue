@@ -149,7 +149,7 @@ function invoiceStatusClass(status: string): string {
         <div class="mt-4 flex flex-wrap items-center gap-3">
           <a
             v-if="account.controlPanelUrl"
-            :href="account.controlPanelUrl"
+            :href="`${account.controlPanelUrl}/logout/`"
             target="_blank"
             rel="noopener"
             class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700"
