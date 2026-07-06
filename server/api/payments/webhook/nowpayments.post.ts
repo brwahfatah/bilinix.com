@@ -211,8 +211,8 @@ export default defineEventHandler(async (event) => {
       try {
         await callWhmcsApi('AcceptOrder', {
           orderid: matchedOrder.id,
-          autosetup: false,
-          sendemail: false,
+          autosetup: 0,
+          sendemail: 0,
         })
         console.log(`[Webhook] Accepted order #${matchedOrder.id} for invoice #${invoiceId}`)
       } catch (err: any) {
