@@ -65,8 +65,8 @@ async function triggerHestiaProvisioning(invoiceId: number): Promise<void> {
     createdAt: number
   }>(storageKey)
 
-  if (!meta?.email || !meta?.package) {
-    console.log(`[Hestia] No pending provisioning for invoice #${invoiceId} — skipping`)
+  if (!meta?.email || !meta?.package || !meta?.domain) {
+    console.log(`[Hestia] No pending provisioning for invoice #${invoiceId} — skipping (missing email/package/domain)`)
     return
   }
 
@@ -74,21 +74,15 @@ async function triggerHestiaProvisioning(invoiceId: number): Promise<void> {
     ? meta.package.toUpperCase()
     : 'STARTER') as HestiaPackage
 
-  const username = toHestiaUsername(meta.email)
+  // Each order gets its own HestiaCP account keyed by domain, not email
+  const username = toHestiaUsername(meta.domain)
 
-  // Idempotency: if the account already exists, skip creation but still notify
+  // Idempotency: if this domain's account already exists (webhook retry), skip
   if (await hestiaUserExists(username)) {
     console.log(
       `[Hestia] Account "${username}" already exists — idempotent skip for invoice #${invoiceId}`,
     )
     await storage.removeItem(storageKey)
-
-    try {
-      await sendWelcomeEmail({ to: meta.email, username, packageName: pkg })
-      console.log(`[Hestia] Sent activation email to ${meta.email} for invoice #${invoiceId}`)
-    } catch (err) {
-      console.error('[WELCOME_EMAIL_FAILED]', err)
-    }
     return
   }
 
