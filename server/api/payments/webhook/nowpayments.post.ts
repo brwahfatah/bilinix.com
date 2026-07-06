@@ -189,11 +189,36 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // ── Step 2: provision hosting account ────────────────────────────────────────
-  // Non-blocking: provisioning errors are logged but never fail the webhook
-  // response so NOWPayments doesn't mark it as a delivery failure.
-  // If Hestia is unreachable, the pending storage entry is preserved and the
-  // next webhook retry will attempt provisioning again (idempotent).
+  // ── Step 2: accept the WHMCS order so service goes Active ────────────────────
+  if (!isFake) {
+    try {
+      const allOrders = await callWhmcsApi('GetOrders', {
+        status: 'Pending',
+        limitnum: 200,
+      }) as Record<string, any>
+      const orderList = Array.isArray(allOrders?.orders?.order) ? allOrders.orders.order : []
+      const matched = orderList.find((o: any) => Number(o.invoiceid) === invoiceId)
+      if (matched) {
+        await callWhmcsApi('AcceptOrder', { orderid: matched.id })
+        console.log(`[Webhook] Accepted order #${matched.id} for invoice #${invoiceId}`)
+
+        // Activate each service in the order (WHMCS module may not handle this)
+        const items = Array.isArray(matched.lineitems?.lineitem) ? matched.lineitems.lineitem : []
+        for (const item of items) {
+          if (item.type === 'product' && String(item.status).toLowerCase() === 'pending') {
+            try {
+              await callWhmcsApi('UpdateClientProduct', { serviceid: item.relid, status: 'Active' })
+              console.log(`[Webhook] Activated service #${item.relid} for invoice #${invoiceId}`)
+            } catch { /* best-effort */ }
+          }
+        }
+      }
+    } catch (err: any) {
+      console.error(`[Webhook] AcceptOrder failed for invoice #${invoiceId}: ${err?.message ?? err}`)
+    }
+  }
+
+  // ── Step 3: provision hosting account ────────────────────────────────────────
   try {
     await triggerHestiaProvisioning(invoiceId)
   } catch (err: any) {
