@@ -189,32 +189,40 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // ── Step 2: accept the WHMCS order so service goes Active ────────────────────
+  // ── Step 2: accept the WHMCS order and activate service ──────────────────────
+  // AcceptOrder triggers the WHMCS server module (hestia), which may fail if the
+  // account already exists. Service activation must run regardless.
   if (!isFake) {
+    let matchedOrder: Record<string, any> | undefined
     try {
       const allOrders = await callWhmcsApi('GetOrders', {
         status: 'Pending',
         limitnum: 200,
       }) as Record<string, any>
       const orderList = Array.isArray(allOrders?.orders?.order) ? allOrders.orders.order : []
-      const matched = orderList.find((o: any) => Number(o.invoiceid) === invoiceId)
-      if (matched) {
-        await callWhmcsApi('AcceptOrder', { orderid: matched.id })
-        console.log(`[Webhook] Accepted order #${matched.id} for invoice #${invoiceId}`)
+      matchedOrder = orderList.find((o: any) => Number(o.invoiceid) === invoiceId)
+    } catch (err: any) {
+      console.error(`[Webhook] GetOrders failed for invoice #${invoiceId}: ${err?.message ?? err}`)
+    }
 
-        // Activate each service in the order (WHMCS module may not handle this)
-        const items = Array.isArray(matched.lineitems?.lineitem) ? matched.lineitems.lineitem : []
-        for (const item of items) {
-          if (item.type === 'product' && String(item.status).toLowerCase() === 'pending') {
-            try {
-              await callWhmcsApi('UpdateClientProduct', { serviceid: item.relid, status: 'Active' })
-              console.log(`[Webhook] Activated service #${item.relid} for invoice #${invoiceId}`)
-            } catch { /* best-effort */ }
-          }
+    if (matchedOrder) {
+      try {
+        await callWhmcsApi('AcceptOrder', { orderid: matchedOrder.id })
+        console.log(`[Webhook] Accepted order #${matchedOrder.id} for invoice #${invoiceId}`)
+      } catch (err: any) {
+        console.error(`[Webhook] AcceptOrder failed for invoice #${invoiceId}: ${err?.message ?? err}`)
+      }
+
+      // Force-activate each service regardless of AcceptOrder result
+      const items = Array.isArray(matchedOrder.lineitems?.lineitem) ? matchedOrder.lineitems.lineitem : []
+      for (const item of items) {
+        if (item.type === 'product') {
+          try {
+            await callWhmcsApi('UpdateClientProduct', { serviceid: item.relid, status: 'Active' })
+            console.log(`[Webhook] Activated service #${item.relid} for invoice #${invoiceId}`)
+          } catch { /* best-effort */ }
         }
       }
-    } catch (err: any) {
-      console.error(`[Webhook] AcceptOrder failed for invoice #${invoiceId}: ${err?.message ?? err}`)
     }
   }
 
