@@ -13,27 +13,25 @@ const asString = (v: unknown, fallback = '') => {
 
 const VALID_HESTIA_PACKAGES = ['STARTER', 'BUSINESS', 'AGENCY'] as const
 
-// Safe low-minimum coins on separate chains (no same-address overlap).
+// Same-coin payout candidates: pay AND receive in the same coin so no conversion
+// happens and minimums stay at network-fee level (pennies, not ~$11).
+// Only coins that have a payout wallet configured in the NOWPayments dashboard.
 // Excludes TRX to avoid TRX/USDT-TRC20 TRON address confusion (invoice #39).
-const SAFE_COINS = ['ltc', 'xlm', 'xrp', 'sol', 'bnbbsc', 'doge'] as const
+const SAFE_COINS = ['ltc'] as const
 
 async function pickCoin(apiKey: string, amountUsd: number): Promise<string | null> {
   for (const coin of SAFE_COINS) {
     try {
-      const data = await $fetch<{ min_amount?: number }>('https://api.nowpayments.io/v1/min-amount', {
-        headers: { 'x-api-key': apiKey },
-        params: { currency_from: coin, currency_to: 'usd' },
-      })
-      const minCoin = Number(data?.min_amount ?? 0)
-      if (minCoin <= 0) continue
-
-      const est = await $fetch<{ estimated_amount?: number }>('https://api.nowpayments.io/v1/estimate', {
-        headers: { 'x-api-key': apiKey },
-        params: { amount: amountUsd, currency_from: 'usd', currency_to: coin },
-      })
-      const payAmount = Number(est?.estimated_amount ?? 0)
-      if (payAmount >= minCoin) {
-        console.log(`[NOWPayments] Picked ${coin} for $${amountUsd} (pay=${payAmount}, min=${minCoin})`)
+      const data = await $fetch<{ min_amount?: number; fiat_equivalent?: number }>(
+        'https://api.nowpayments.io/v1/min-amount',
+        {
+          headers: { 'x-api-key': apiKey },
+          params: { currency_from: coin, currency_to: coin, fiat_equivalent: 'usd' },
+        },
+      )
+      const minUsd = Number(data?.fiat_equivalent ?? 0)
+      if (minUsd > 0 && amountUsd >= minUsd) {
+        console.log(`[NOWPayments] Picked ${coin} for $${amountUsd} (min ~$${minUsd})`)
         return coin
       }
     } catch {
@@ -143,6 +141,7 @@ export default defineEventHandler(async (event) => {
   }
   if (coin) {
     invoiceBody.pay_currency = coin
+    invoiceBody.payout_currency = coin
   }
 
   const nowPayment = (await $fetch('https://api.nowpayments.io/v1/invoice', {
