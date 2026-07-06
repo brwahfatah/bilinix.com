@@ -137,7 +137,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid JSON body' })
   }
 
-  const { payment_status, order_id, payment_id, actually_paid } = payload
+  const { payment_status, order_id, payment_id, actually_paid, price_amount } = payload
 
   // Only finalize on confirmed/finished — all other statuses are acknowledged but ignored
   if (payment_status !== 'finished' && payment_status !== 'confirmed') {
@@ -184,7 +184,7 @@ export default defineEventHandler(async (event) => {
       transid,
       gateway: 'nowpayments',
       date: new Date().toISOString().split('T')[0]!,
-      amount: Number(actually_paid ?? 0),
+      amount: Number(price_amount ?? 0),
       noemail: false,
     })
   }
