@@ -160,7 +160,7 @@ export const hostingPlans: HostingPlan[] = [
     description: 'A clean plan for side projects, portfolios, and small launches.',
     monthly: 2.99,
     yearly: 28.70,
-    allowed_cycles: ['annually'],
+    allowed_cycles: ['monthly', 'annually'],
     whmcs_product_id: 1,
     features: [
       '1 Website',
@@ -192,7 +192,7 @@ export const hostingPlans: HostingPlan[] = [
     description: 'More room for client projects, WooCommerce, and WordPress multisite.',
     monthly: 5.99,
     yearly: 57.50,
-    allowed_cycles: ['annually'],
+    allowed_cycles: ['monthly', 'annually'],
     whmcs_product_id: 2,
     popular: true,
     badge: 'Most Popular',
