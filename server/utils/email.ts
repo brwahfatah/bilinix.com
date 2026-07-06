@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer'
 export async function sendWelcomeEmail(opts: {
   to: string
   username: string
-  password: string
+  password?: string
   packageName: string
 }): Promise<true> {
   const runtime = useRuntimeConfig()
@@ -28,13 +28,28 @@ export async function sendWelcomeEmail(opts: {
     tls: { rejectUnauthorized: false },
   })
 
-  const body = [
+  const lines: string[] = [
     'Hello,',
     '',
-    'Your hosting account has been created successfully.',
-    '',
-    `Username: ${opts.username}`,
-    `Password: ${opts.password}`,
+  ]
+
+  if (opts.password) {
+    lines.push(
+      'Your hosting account has been created successfully.',
+      '',
+      `Username: ${opts.username}`,
+      `Password: ${opts.password}`,
+    )
+  } else {
+    lines.push(
+      'Your new hosting service has been activated.',
+      '',
+      `Username: ${opts.username}`,
+      'Use the password from your original welcome email to log in.',
+    )
+  }
+
+  lines.push(
     '',
     'Control Panel:',
     'https://server1.bilinix.com:8083',
@@ -49,7 +64,9 @@ export async function sendWelcomeEmail(opts: {
     'https://server1.bilinix.com/webmail',
     '',
     'Thank you for choosing Bilinix Hosting.',
-  ].join('\n')
+  )
+
+  const body = lines.join('\n')
 
   const info = await transporter.sendMail({
     from,

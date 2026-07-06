@@ -76,12 +76,19 @@ async function triggerHestiaProvisioning(invoiceId: number): Promise<void> {
 
   const username = toHestiaUsername(meta.email)
 
-  // Idempotency: if the account already exists (e.g. webhook retry), skip creation
+  // Idempotency: if the account already exists, skip creation but still notify
   if (await hestiaUserExists(username)) {
     console.log(
       `[Hestia] Account "${username}" already exists — idempotent skip for invoice #${invoiceId}`,
     )
     await storage.removeItem(storageKey)
+
+    try {
+      await sendWelcomeEmail({ to: meta.email, username, packageName: pkg })
+      console.log(`[Hestia] Sent activation email to ${meta.email} for invoice #${invoiceId}`)
+    } catch (err) {
+      console.error('[WELCOME_EMAIL_FAILED]', err)
+    }
     return
   }
 
@@ -190,8 +197,9 @@ export default defineEventHandler(async (event) => {
   }
 
   // ── Step 2: accept the WHMCS order and activate service ──────────────────────
-  // AcceptOrder triggers the WHMCS server module (hestia), which may fail if the
-  // account already exists. Service activation must run regardless.
+  // autosetup=false prevents WHMCS from running the hestia module (which fails
+  // with error 8 when the account already exists). We provision via HestiaCP API
+  // directly in step 3. sendemail=false because we send our own welcome email.
   if (!isFake) {
     let matchedOrder: Record<string, any> | undefined
     try {
@@ -207,7 +215,11 @@ export default defineEventHandler(async (event) => {
 
     if (matchedOrder) {
       try {
-        await callWhmcsApi('AcceptOrder', { orderid: matchedOrder.id })
+        await callWhmcsApi('AcceptOrder', {
+          orderid: matchedOrder.id,
+          autosetup: false,
+          sendemail: false,
+        })
         console.log(`[Webhook] Accepted order #${matchedOrder.id} for invoice #${invoiceId}`)
       } catch (err: any) {
         console.error(`[Webhook] AcceptOrder failed for invoice #${invoiceId}: ${err?.message ?? err}`)
