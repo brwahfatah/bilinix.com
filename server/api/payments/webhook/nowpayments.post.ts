@@ -48,7 +48,7 @@ function generatePassword(): string {
 const VALID_PACKAGES: readonly string[] = ['STARTER', 'BUSINESS', 'AGENCY']
 
 
-async function triggerHestiaProvisioning(invoiceId: number): Promise<void> {
+async function triggerHestiaProvisioning(invoiceId: number, serviceId?: number): Promise<void> {
   const runtime = useRuntimeConfig()
 
   if (!runtime.hestiaApiUrl || !runtime.hestiaApiKey) {
@@ -101,6 +101,18 @@ async function triggerHestiaProvisioning(invoiceId: number): Promise<void> {
   console.log(
     `[Hestia] Provisioned account "${username}" for ${meta.email} pkg=${pkg} invoice=#${invoiceId}`,
   )
+
+  // Update WHMCS service with the HestiaCP credentials so dashboard shows them
+  if (serviceId) {
+    try {
+      await callWhmcsApi('UpdateClientProduct', {
+        serviceid: serviceId,
+        serviceusername: username,
+        servicepassword: password,
+      })
+      console.log(`[Hestia] Updated WHMCS service #${serviceId} credentials`)
+    } catch { /* best-effort */ }
+  }
 
   try {
     await sendWelcomeEmail({
@@ -191,14 +203,14 @@ export default defineEventHandler(async (event) => {
   }
 
   // ── Step 2: accept the WHMCS order and activate service ──────────────────────
-  // autosetup=false prevents WHMCS from running the hestia module (which fails
-  // with error 8 when the account already exists). We provision via HestiaCP API
-  // directly in step 3. sendemail=false because we send our own welcome email.
+  // The InvoicePaid hook (triggered by AddInvoicePayment above) already handled
+  // AcceptOrder + ModuleCreate + welcome email. These calls are safety nets in
+  // case the hook failed or the module didn't provision the account.
+  let firstServiceId: number | undefined
   if (!isFake) {
     let matchedOrder: Record<string, any> | undefined
     try {
       const allOrders = await callWhmcsApi('GetOrders', {
-        status: 'Pending',
         limitnum: 200,
       }) as Record<string, any>
       const orderList = Array.isArray(allOrders?.orders?.order) ? allOrders.orders.order : []
@@ -208,21 +220,23 @@ export default defineEventHandler(async (event) => {
     }
 
     if (matchedOrder) {
-      try {
-        await callWhmcsApi('AcceptOrder', {
-          orderid: matchedOrder.id,
-          autosetup: 0,
-          sendemail: 0,
-        })
-        console.log(`[Webhook] Accepted order #${matchedOrder.id} for invoice #${invoiceId}`)
-      } catch (err: any) {
-        console.error(`[Webhook] AcceptOrder failed for invoice #${invoiceId}: ${err?.message ?? err}`)
+      if (String(matchedOrder.status).toLowerCase() === 'pending') {
+        try {
+          await callWhmcsApi('AcceptOrder', {
+            orderid: matchedOrder.id,
+            autosetup: 0,
+            sendemail: 0,
+          })
+          console.log(`[Webhook] Accepted order #${matchedOrder.id} for invoice #${invoiceId}`)
+        } catch (err: any) {
+          console.error(`[Webhook] AcceptOrder failed for invoice #${invoiceId}: ${err?.message ?? err}`)
+        }
       }
 
-      // Force-activate each service regardless of AcceptOrder result
       const items = Array.isArray(matchedOrder.lineitems?.lineitem) ? matchedOrder.lineitems.lineitem : []
       for (const item of items) {
         if (item.type === 'product') {
+          if (!firstServiceId) firstServiceId = Number(item.relid)
           try {
             await callWhmcsApi('UpdateClientProduct', { serviceid: item.relid, status: 'Active' })
             console.log(`[Webhook] Activated service #${item.relid} for invoice #${invoiceId}`)
@@ -232,9 +246,12 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // ── Step 3: provision hosting account ────────────────────────────────────────
+  // ── Step 3: provision hosting account (safety net) ──────────────────────────
+  // If the WHMCS module already created the account (via InvoicePaid hook),
+  // this will detect the existing user and skip. Only provisions if the module
+  // failed, ensuring the customer always gets their account.
   try {
-    await triggerHestiaProvisioning(invoiceId)
+    await triggerHestiaProvisioning(invoiceId, firstServiceId)
   } catch (err: any) {
     console.error(
       `[Hestia] Provisioning failed for invoice #${invoiceId}: ${err?.message ?? err}`,
