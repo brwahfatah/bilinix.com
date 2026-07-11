@@ -2,10 +2,57 @@
 
 use WHMCS\Database\Capsule;
 
+/**
+ * AfterModuleCreate: safety net for status activation.
+ */
+add_hook('AfterModuleCreate', 1, function($vars) {
+    $serviceId = $vars['params']['serviceid'] ?? 0;
+    if (!$serviceId) return;
+
+    try {
+        $service = Capsule::table('tblhosting')->where('id', $serviceId)->first();
+        if (!$service) return;
+
+        if (strtolower($service->domainstatus) !== 'active') {
+            Capsule::table('tblhosting')
+                ->where('id', $serviceId)
+                ->update(['domainstatus' => 'Active']);
+        }
+
+        if ($service->orderid) {
+            $order = Capsule::table('tblorders')->where('id', $service->orderid)->first();
+            if ($order && strtolower($order->status) === 'pending') {
+                Capsule::table('tblorders')
+                    ->where('id', $order->id)
+                    ->update(['status' => 'Active']);
+            }
+        }
+    } catch (\Exception $e) {
+        logActivity("AfterModuleCreate hook error: " . $e->getMessage());
+    }
+});
+
+/**
+ * InvoicePaid: accept order and launch async provisioning.
+ */
 add_hook('InvoicePaid', 1, function($vars) {
     $invoiceId = $vars['invoiceid'];
 
     try {
+        // Accept the order
+        $order = Capsule::table('tblorders')
+            ->where('invoiceid', $invoiceId)
+            ->first();
+
+        if ($order && strtolower($order->status) === 'pending') {
+            Capsule::table('tblorders')
+                ->where('id', $order->id)
+                ->update(['status' => 'Active']);
+        }
+
+        if (!$order) return;
+
+        // Find hosting services for this invoice
         $items = Capsule::table('tblinvoiceitems')
             ->where('invoiceid', $invoiceId)
             ->where('type', 'Hosting')
@@ -15,44 +62,13 @@ add_hook('InvoicePaid', 1, function($vars) {
             $serviceId = $item->relid;
             if (!$serviceId) continue;
 
-            $service = Capsule::table('tblhosting')
-                ->where('id', $serviceId)
-                ->first();
+            $service = Capsule::table('tblhosting')->where('id', $serviceId)->first();
+            if (!$service || !empty($service->username)) continue;
 
-            if (!$service || strtolower($service->domainstatus) !== 'pending') {
-                continue;
-            }
-
-            $orderItem = Capsule::table('tblorders')
-                ->where('invoiceid', $invoiceId)
-                ->first();
-
-            if ($orderItem && strtolower($orderItem->status) === 'pending') {
-                localAPI('AcceptOrder', [
-                    'orderid'   => $orderItem->id,
-                    'autosetup' => false,
-                    'sendemail' => false,
-                ]);
-                logActivity("InvoicePaid hook: accepted order #{$orderItem->id} for invoice #{$invoiceId}");
-            }
-
-            Capsule::table('tblhosting')
-                ->where('id', $serviceId)
-                ->update(['domainstatus' => 'Active']);
-
-            logActivity("InvoicePaid hook: activated service #{$serviceId} for invoice #{$invoiceId}");
-
-            // Send the hosting welcome email with credentials
-            $emailResult = localAPI('SendEmail', [
-                'messagename' => 'Hosting Account Welcome Email',
-                'id'          => $serviceId,
-            ]);
-
-            if ($emailResult['result'] === 'success') {
-                logActivity("InvoicePaid hook: sent welcome email for service #{$serviceId}");
-            } else {
-                logActivity("InvoicePaid hook: welcome email failed for service #{$serviceId}: " . ($emailResult['message'] ?? 'unknown'));
-            }
+            // Launch background provisioning (non-blocking)
+            $script = dirname(__DIR__) . '/provision_service.php';
+            exec("php $script $serviceId > /dev/null 2>&1 &");
+            logActivity("InvoicePaid hook: queued async provisioning for service #{$serviceId}");
         }
     } catch (\Exception $e) {
         logActivity("InvoicePaid hook error: " . $e->getMessage());
