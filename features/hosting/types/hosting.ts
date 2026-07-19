@@ -17,13 +17,3 @@ export interface HostingAccount {
   username: string
   controlPanelUrl: string
 }
-
-export interface HostingInvoice {
-  id: number
-  status: string
-  date: string
-  dueDate: string
-  datePaid: string
-  total: string
-  description: string
-}

@@ -1,4 +1,4 @@
-import type { HostingAccount, HostingInvoice, HostingStatus } from '../types/hosting'
+import type { HostingAccount, HostingStatus } from '../types/hosting'
 import { api } from '~/utils/apiClient'
 
 interface LaravelHosting {
@@ -17,16 +17,6 @@ interface LaravelHosting {
   bw_limit: number
   username: string
   control_panel_url: string
-}
-
-interface LaravelInvoice {
-  id: number
-  status: string
-  date: string
-  due_date: string
-  date_paid: string
-  total: string
-  description: string
 }
 
 interface LaravelResponse<T> {
@@ -72,18 +62,5 @@ export const hostingService = {
   async get(id: string): Promise<HostingAccount> {
     const res = await api<LaravelResponse<LaravelHosting>>(`/hosting/${id}`)
     return laravelToHosting(res.data)
-  },
-
-  async invoices(id: string): Promise<HostingInvoice[]> {
-    const res = await api<LaravelResponse<LaravelInvoice[]>>(`/hosting/${id}/invoices`)
-    return (Array.isArray(res.data) ? res.data : []).map((inv) => ({
-      id: inv.id,
-      status: inv.status || '',
-      date: inv.date || '',
-      dueDate: inv.due_date || '',
-      datePaid: inv.date_paid || '',
-      total: inv.total || '0.00',
-      description: inv.description || '',
-    }))
   },
 }

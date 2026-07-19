@@ -1,14 +1,12 @@
 import { defineStore } from 'pinia'
 import { hostingService } from '../service/hostingService'
 import { buildApiError } from '~/types/api'
-import type { HostingAccount, HostingInvoice } from '../types/hosting'
+import type { HostingAccount } from '../types/hosting'
 import type { ApiError } from '~/types/api'
 
 interface HostingState {
   items: HostingAccount[]
   current: HostingAccount | null
-  invoices: HostingInvoice[]
-  invoicesLoading: boolean
   loading: boolean
   error: ApiError | null
 }
@@ -17,8 +15,6 @@ export const useHostingStore = defineStore('hosting', {
   state: (): HostingState => ({
     items: [],
     current: null,
-    invoices: [],
-    invoicesLoading: false,
     loading: false,
     error: null,
   }),
@@ -51,17 +47,6 @@ export const useHostingStore = defineStore('hosting', {
         throw e
       } finally {
         this.loading = false
-      }
-    },
-
-    async fetchInvoices(id: string) {
-      this.invoicesLoading = true
-      try {
-        this.invoices = await hostingService.invoices(id)
-      } catch {
-        this.invoices = []
-      } finally {
-        this.invoicesLoading = false
       }
     },
   },
