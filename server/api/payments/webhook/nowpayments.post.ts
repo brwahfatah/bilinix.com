@@ -48,7 +48,7 @@ function generatePassword(): string {
 const VALID_PACKAGES: readonly string[] = ['STARTER', 'BUSINESS', 'AGENCY']
 
 
-async function triggerHestiaProvisioning(invoiceId: number): Promise<void> {
+async function triggerHestiaProvisioning(invoiceId: number, serviceId?: number): Promise<void> {
   const runtime = useRuntimeConfig()
 
   if (!runtime.hestiaApiUrl || !runtime.hestiaApiKey) {
@@ -65,8 +65,8 @@ async function triggerHestiaProvisioning(invoiceId: number): Promise<void> {
     createdAt: number
   }>(storageKey)
 
-  if (!meta?.email || !meta?.package) {
-    console.log(`[Hestia] No pending provisioning for invoice #${invoiceId} — skipping`)
+  if (!meta?.email || !meta?.package || !meta?.domain) {
+    console.log(`[Hestia] No pending provisioning for invoice #${invoiceId} — skipping (missing email/package/domain)`)
     return
   }
 
@@ -74,9 +74,10 @@ async function triggerHestiaProvisioning(invoiceId: number): Promise<void> {
     ? meta.package.toUpperCase()
     : 'STARTER') as HestiaPackage
 
-  const username = toHestiaUsername(meta.email)
+  // Each order gets its own HestiaCP account keyed by domain, not email
+  const username = toHestiaUsername(meta.domain)
 
-  // Idempotency: if the account already exists (e.g. webhook retry), skip creation
+  // Idempotency: if this domain's account already exists (webhook retry), skip
   if (await hestiaUserExists(username)) {
     console.log(
       `[Hestia] Account "${username}" already exists — idempotent skip for invoice #${invoiceId}`,
@@ -100,6 +101,18 @@ async function triggerHestiaProvisioning(invoiceId: number): Promise<void> {
   console.log(
     `[Hestia] Provisioned account "${username}" for ${meta.email} pkg=${pkg} invoice=#${invoiceId}`,
   )
+
+  // Update WHMCS service with the HestiaCP credentials so dashboard shows them
+  if (serviceId) {
+    try {
+      await callWhmcsApi('UpdateClientProduct', {
+        serviceid: serviceId,
+        serviceusername: username,
+        servicepassword: password,
+      })
+      console.log(`[Hestia] Updated WHMCS service #${serviceId} credentials`)
+    } catch { /* best-effort */ }
+  }
 
   try {
     await sendWelcomeEmail({
@@ -137,7 +150,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid JSON body' })
   }
 
-  const { payment_status, order_id, payment_id, actually_paid } = payload
+  const { payment_status, order_id, payment_id, actually_paid, price_amount } = payload
 
   // Only finalize on confirmed/finished — all other statuses are acknowledged but ignored
   if (payment_status !== 'finished' && payment_status !== 'confirmed') {
@@ -150,6 +163,29 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid order_id in payload' })
   }
 
+  const transid = String(payment_id)
+
+  // ── Deduplication: skip if this payment_id was already recorded ──────────────
+  if (!isFake) {
+    try {
+      const existing = await callWhmcsApi('GetTransactions', {
+        invoiceid: invoiceId,
+        transid,
+      }) as Record<string, any>
+      const txns = existing?.transactions?.transaction
+      const alreadyRecorded = Array.isArray(txns)
+        ? txns.some((t: any) => String(t.transid) === transid)
+        : false
+      if (alreadyRecorded) {
+        console.log(`[NOWPayments] Duplicate webhook for invoice #${invoiceId}, transid ${transid} — skipping`)
+        setResponseStatus(event, 200)
+        return { ok: true, duplicate: true }
+      }
+    } catch {
+      // If GetTransactions fails, proceed with payment recording to avoid blocking legitimate payments
+    }
+  }
+
   // ── Step 1: mark invoice paid ────────────────────────────────────────────────
   if (isFake) {
     console.log(
@@ -158,21 +194,64 @@ export default defineEventHandler(async (event) => {
   } else {
     await callWhmcsApi('AddInvoicePayment', {
       invoiceid: invoiceId,
-      transid: String(payment_id),
+      transid,
       gateway: 'nowpayments',
       date: new Date().toISOString().split('T')[0]!,
-      amount: Number(actually_paid ?? 0),
+      amount: Number(price_amount ?? 0),
       noemail: false,
     })
   }
 
-  // ── Step 2: provision hosting account ────────────────────────────────────────
-  // Non-blocking: provisioning errors are logged but never fail the webhook
-  // response so NOWPayments doesn't mark it as a delivery failure.
-  // If Hestia is unreachable, the pending storage entry is preserved and the
-  // next webhook retry will attempt provisioning again (idempotent).
+  // ── Step 2: accept the WHMCS order and activate service ──────────────────────
+  // The InvoicePaid hook (triggered by AddInvoicePayment above) already handled
+  // AcceptOrder + ModuleCreate + welcome email. These calls are safety nets in
+  // case the hook failed or the module didn't provision the account.
+  let firstServiceId: number | undefined
+  if (!isFake) {
+    let matchedOrder: Record<string, any> | undefined
+    try {
+      const allOrders = await callWhmcsApi('GetOrders', {
+        limitnum: 200,
+      }) as Record<string, any>
+      const orderList = Array.isArray(allOrders?.orders?.order) ? allOrders.orders.order : []
+      matchedOrder = orderList.find((o: any) => Number(o.invoiceid) === invoiceId)
+    } catch (err: any) {
+      console.error(`[Webhook] GetOrders failed for invoice #${invoiceId}: ${err?.message ?? err}`)
+    }
+
+    if (matchedOrder) {
+      if (String(matchedOrder.status).toLowerCase() === 'pending') {
+        try {
+          await callWhmcsApi('AcceptOrder', {
+            orderid: matchedOrder.id,
+            autosetup: 0,
+            sendemail: 0,
+          })
+          console.log(`[Webhook] Accepted order #${matchedOrder.id} for invoice #${invoiceId}`)
+        } catch (err: any) {
+          console.error(`[Webhook] AcceptOrder failed for invoice #${invoiceId}: ${err?.message ?? err}`)
+        }
+      }
+
+      const items = Array.isArray(matchedOrder.lineitems?.lineitem) ? matchedOrder.lineitems.lineitem : []
+      for (const item of items) {
+        if (item.type === 'product') {
+          if (!firstServiceId) firstServiceId = Number(item.relid)
+          try {
+            await callWhmcsApi('UpdateClientProduct', { serviceid: item.relid, status: 'Active' })
+            console.log(`[Webhook] Activated service #${item.relid} for invoice #${invoiceId}`)
+          } catch { /* best-effort */ }
+        }
+      }
+    }
+  }
+
+  // ── Step 3: provision hosting account (safety net) ──────────────────────────
+  // If the WHMCS module already created the account (via InvoicePaid hook),
+  // this will detect the existing user and skip. Only provisions if the module
+  // failed, ensuring the customer always gets their account.
   try {
-    await triggerHestiaProvisioning(invoiceId)
+    await triggerHestiaProvisioning(invoiceId, firstServiceId)
   } catch (err: any) {
     console.error(
       `[Hestia] Provisioning failed for invoice #${invoiceId}: ${err?.message ?? err}`,

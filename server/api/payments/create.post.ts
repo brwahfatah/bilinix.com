@@ -13,6 +13,34 @@ const asString = (v: unknown, fallback = '') => {
 
 const VALID_HESTIA_PACKAGES = ['STARTER', 'BUSINESS', 'AGENCY'] as const
 
+// Same-coin payout candidates: pay AND receive in the same coin so no conversion
+// happens and minimums stay at network-fee level (pennies, not ~$11).
+// Only coins that have a payout wallet configured in the NOWPayments dashboard.
+// Excludes TRX to avoid TRX/USDT-TRC20 TRON address confusion (invoice #39).
+const SAFE_COINS = ['ltc'] as const
+
+async function pickCoin(apiKey: string, amountUsd: number): Promise<string | null> {
+  for (const coin of SAFE_COINS) {
+    try {
+      const data = await $fetch<{ min_amount?: number; fiat_equivalent?: number }>(
+        'https://api.nowpayments.io/v1/min-amount',
+        {
+          headers: { 'x-api-key': apiKey },
+          params: { currency_from: coin, currency_to: coin, fiat_equivalent: 'usd' },
+        },
+      )
+      const minUsd = Number(data?.fiat_equivalent ?? 0)
+      if (minUsd > 0 && amountUsd >= minUsd) {
+        console.log(`[NOWPayments] Picked ${coin} for $${amountUsd} (min ~$${minUsd})`)
+        return coin
+      }
+    } catch {
+      // coin unavailable or API error — skip to next
+    }
+  }
+  return null
+}
+
 export default defineEventHandler(async (event) => {
   const runtime = useRuntimeConfig()
   const isFake = String(runtime.whmcsDriver) === 'fake'
@@ -97,36 +125,39 @@ export default defineEventHandler(async (event) => {
     )
   }
 
-  console.log(`[NOWPayments] Creating invoice #${invoiceId}, amount: $${amount}`)
+  // ── Dynamic coin selection ─────────────────────────────────────────────────
+  const coin = isFake ? 'ltc' : await pickCoin(apiKey, amount)
 
-  // Send amount in USD, do NOT force a pay_currency — the payer selects
-  // their coin/network on the NOWPayments payment page. Low-minimum coins
-  // (USDT-TRC20, LTC, TRX, XLM) become available automatically.
-  // is_fee_paid_by_user: true — the customer covers the network fee,
-  // so the invoice amount itself can be as low as ~$1.
+  console.log(`[NOWPayments] Creating invoice #${invoiceId}, amount: $${amount}, coin: ${coin ?? 'any'}`)
+
+  const invoiceBody: Record<string, unknown> = {
+    price_amount: amount,
+    price_currency: 'usd',
+    order_id: String(invoiceId),
+    order_description: `Invoice #${invoiceNum}`,
+    ipn_callback_url: 'https://bilinix.com/api/payments/webhook/nowpayments',
+    success_url: 'https://bilinix.com/dashboard/billing/invoices?payment=success',
+    cancel_url: 'https://bilinix.com/dashboard/billing/invoices?payment=cancelled',
+  }
+  if (coin) {
+    invoiceBody.pay_currency = coin
+    invoiceBody.payout_currency = coin
+  }
+
   const nowPayment = (await $fetch('https://api.nowpayments.io/v1/invoice', {
     method: 'POST',
     headers: {
       'x-api-key': apiKey,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      price_amount: amount,
-      price_currency: 'usd',
-      order_id: String(invoiceId),
-      order_description: `Invoice #${invoiceNum}`,
-      ipn_callback_url: 'https://bilinix.com/api/payments/webhook/nowpayments',
-      success_url: 'https://bilinix.com/dashboard/billing/invoices?payment=success',
-      cancel_url: 'https://bilinix.com/dashboard/billing/invoices?payment=cancelled',
-      is_fixed_rate: false,
-      is_fee_paid_by_user: true,
-    }),
+    body: JSON.stringify(invoiceBody),
   })) as { id: string; invoice_url: string }
 
   return {
     payment_url: nowPayment.invoice_url,
     payment_id: String(nowPayment.id),
     order_id: String(invoiceId),
+    pay_currency: coin ?? undefined,
     fake: isFake,
   }
 })

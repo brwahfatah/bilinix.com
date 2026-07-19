@@ -205,6 +205,7 @@ export const useCart = () => {
           product_id:    String(item.meta?.whmcs_product_id ?? item.id),
           name:          item.name,
           type:          item.type,
+          domain:        item.meta?.domain || null,
           billing_cycle: periodToBillingCycle(item.period),
           quantity:      item.quantity ?? 1,
           unit_price:    item.price,

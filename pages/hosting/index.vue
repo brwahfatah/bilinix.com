@@ -19,6 +19,9 @@ const router = useRouter()
 const { addItem, items } = useCart()
 
 const billing = ref<'monthly' | 'yearly'>('yearly')
+const pendingPlan = ref<(typeof computedPlans.value)[0] | null>(null)
+const domainInput = ref('')
+const domainError = ref('')
 
 const computedPlans = computed(() =>
   hostingPlans.map((plan) => {
@@ -36,9 +39,33 @@ const computedPlans = computed(() =>
 const planInCart = (planId: number) =>
   items.value.some((item) => item.type === 'server' && item.meta?.whmcs_product_id === planId)
 
+const DOMAIN_RE = /^(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.[a-zA-Z]{2,}$/
+
+function validateDomain(val: string): string {
+  const d = val.trim().toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, '')
+  if (!d) return 'Please enter a domain name.'
+  if (!DOMAIN_RE.test(d)) return 'Enter a valid domain (e.g. mysite.com).'
+  return ''
+}
+
 const selectPlan = async (plan: (typeof computedPlans.value)[0]) => {
   if (planInCart(plan.id)) {
     router.push('/cart')
+    return
+  }
+  pendingPlan.value = plan
+  domainInput.value = ''
+  domainError.value = ''
+}
+
+const confirmDomain = async () => {
+  const plan = pendingPlan.value
+  if (!plan) return
+
+  const cleaned = domainInput.value.trim().toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, '')
+  const err = validateDomain(cleaned)
+  if (err) {
+    domainError.value = err
     return
   }
 
@@ -53,10 +80,16 @@ const selectPlan = async (plan: (typeof computedPlans.value)[0]) => {
       whmcs_product_id: plan.whmcs_product_id || plan.id,
       plan_id: plan.id,
       product_type: 'hosting',
+      domain: cleaned,
     },
   })
 
+  pendingPlan.value = null
   router.push('/cart')
+}
+
+const cancelDomain = () => {
+  pendingPlan.value = null
 }
 
 const compareRows = [
@@ -425,5 +458,52 @@ const techFeatures = [
         </div>
       </div>
     </section>
+
+    <!-- ───── DOMAIN INPUT MODAL ───── -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="pendingPlan" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4" @click.self="cancelDomain">
+          <div class="w-full max-w-md rounded-2xl bg-white p-7 shadow-2xl dark:bg-slate-900">
+            <h3 class="text-lg font-black text-slate-950 dark:text-white">Enter your domain</h3>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              What domain will you host on the <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ pendingPlan.name }}</span> plan?
+            </p>
+
+            <div class="mt-5">
+              <label for="hosting-domain" class="block text-xs font-bold uppercase tracking-widest text-slate-400">Domain name</label>
+              <input
+                id="hosting-domain"
+                v-model="domainInput"
+                type="text"
+                placeholder="mysite.com"
+                class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-950 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                @keydown.enter="confirmDomain"
+              />
+              <p v-if="domainError" class="mt-2 text-xs font-semibold text-rose-500">{{ domainError }}</p>
+              <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                Enter the domain you already own. You'll point its nameservers to our servers after checkout.
+              </p>
+            </div>
+
+            <div class="mt-6 flex gap-3">
+              <button
+                type="button"
+                class="flex-1 rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white transition hover:bg-emerald-500"
+                @click="confirmDomain"
+              >
+                Add to Cart
+              </button>
+              <button
+                type="button"
+                class="rounded-xl border border-slate-200 px-5 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800"
+                @click="cancelDomain"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>

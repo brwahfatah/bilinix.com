@@ -25,6 +25,7 @@ export async function sendWelcomeEmail(opts: {
     port,
     secure: port === 465,
     auth: { user, pass },
+    tls: { rejectUnauthorized: false },
   })
 
   const body = [
