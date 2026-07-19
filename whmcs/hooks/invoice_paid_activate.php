@@ -33,13 +33,14 @@ add_hook('AfterModuleCreate', 1, function($vars) {
 });
 
 /**
- * InvoicePaid: accept order and launch async provisioning.
+ * InvoicePaid: activate order and provision via localAPI.
+ * Fires when invoice is fully paid (gateway payment, manual credit, admin action).
+ * Does NOT fire during AddOrder's internal credit-auto-apply (handled by Laravel).
  */
 add_hook('InvoicePaid', 1, function($vars) {
     $invoiceId = $vars['invoiceid'];
 
     try {
-        // Accept the order
         $order = Capsule::table('tblorders')
             ->where('invoiceid', $invoiceId)
             ->first();
@@ -52,7 +53,6 @@ add_hook('InvoicePaid', 1, function($vars) {
 
         if (!$order) return;
 
-        // Find hosting services for this invoice
         $items = Capsule::table('tblinvoiceitems')
             ->where('invoiceid', $invoiceId)
             ->where('type', 'Hosting')
@@ -65,10 +65,8 @@ add_hook('InvoicePaid', 1, function($vars) {
             $service = Capsule::table('tblhosting')->where('id', $serviceId)->first();
             if (!$service || !empty($service->username)) continue;
 
-            // Launch background provisioning (non-blocking)
-            $script = dirname(__DIR__) . '/provision_service.php';
-            exec("php $script $serviceId > /dev/null 2>&1 &");
-            logActivity("InvoicePaid hook: queued async provisioning for service #{$serviceId}");
+            $result = localAPI('ModuleCreate', ['serviceid' => $serviceId], 'Brwa');
+            logActivity("InvoicePaid hook: provisioned service #$serviceId — " . ($result['result'] ?? 'unknown'));
         }
     } catch (\Exception $e) {
         logActivity("InvoicePaid hook error: " . $e->getMessage());

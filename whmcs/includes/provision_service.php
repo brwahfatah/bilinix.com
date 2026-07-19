@@ -1,14 +1,13 @@
 <?php
 /**
  * Background provisioning script.
- * Called asynchronously by the InvoicePaid hook.
+ * Called asynchronously by Laravel OrderService (credit-auto-pay path).
  * Usage: php provision_service.php <service_id>
  */
 
 $serviceId = (int)($argv[1] ?? 0);
 if (!$serviceId) exit(1);
 
-// Wait a moment for the AddOrder transaction to commit
 sleep(2);
 
 define('WHMCS', true);
@@ -24,10 +23,21 @@ if (!$service) {
     exit(1);
 }
 
-// Skip if already provisioned (has username)
 if (!empty($service->username)) {
     file_put_contents($logFile, "$t Service #$serviceId already provisioned (user={$service->username}), skipping\n", FILE_APPEND);
     exit(0);
+}
+
+// Payment guard: only provision if the invoice is actually paid
+if ($service->orderid) {
+    $order = Capsule::table('tblorders')->where('id', $service->orderid)->first();
+    if ($order && $order->invoiceid) {
+        $invoice = Capsule::table('tblinvoices')->where('id', $order->invoiceid)->first();
+        if ($invoice && strtolower($invoice->status) !== 'paid') {
+            file_put_contents($logFile, "$t Service #$serviceId invoice #{$order->invoiceid} NOT paid (status={$invoice->status}), aborting\n", FILE_APPEND);
+            exit(1);
+        }
+    }
 }
 
 file_put_contents($logFile, "$t Provisioning service #$serviceId ({$service->domain})\n", FILE_APPEND);
